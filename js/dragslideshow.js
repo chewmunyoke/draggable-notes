@@ -73,7 +73,6 @@
 		sliderWidthPct : 100, // width percentage of slider in slideshow
 		sliderHeightPct : 60, // height percentage of slider in slideshow
 		slideWidthPct : 80, // width percentage of slide in slider, to calculate actual width & margin of each slide in slider
-		slideAdjPct : 4.5, // "left" percentage of adjacent slides
 		slideContentMargin : 20, // total horizontal margin of '.slider .slide.show', to calculate actual width of slide when shown
 		element: {
 			slider : 'section.dragdealer',
@@ -85,6 +84,8 @@
 			showContent : 'show-content',
 			show : 'show',
 			current : 'current',
+			previous : 'previous',
+			next : 'next',
 			switchMax : 'switch-max',
 			switchMin : 'switch-min',
 			switchShow : 'switch-show',
@@ -125,8 +126,8 @@
 		// Add "current" class to the first slide
 		classie.add(self.slides[self.current], self.options.class.current);
 
-		// Add "left" CSS property to the second slide
-		self.slides[self.current + 1].style.left = '-' + self.options.slideAdjPct + '%';
+		// Add adjacent class to the second slide
+		classie.add(self.slides[self.current + 1], self.options.class.next);
 
 		// Set the width of the handle
 		self.handle.style.width = self.slidesCount * self.options.sliderWidthPct + '%';
@@ -170,24 +171,24 @@
 		var self = this;
 		// Remove "current" class from the old current slide
 		classie.remove(self.slides[self.current || 0], self.options.class.current);
-		// Remove "left" CSS property from adjacent slides
+		// Remove adjacent classes from adjacent slides
 		if (self.current != 0) {
-			self.slides[self.current - 1].style.left = null;
+			classie.remove(self.slides[self.current - 1], self.options.class.previous);
 		}
 		if (self.current != self.slidesCount - 1) {
-			self.slides[self.current + 1].style.left = null;
+			classie.remove(self.slides[self.current + 1], self.options.class.next);
 		}
 
 		self.current = self.dd.getStep()[0] - 1;
 
 		// Add "current" class to the new current slide
 		classie.add(self.slides[self.current], self.options.class.current);
-		// Add "left" CSS property to adjacent slides
+		// Add adjacent classes to adjacent slides
 		if (self.current != 0) {
-			self.slides[self.current - 1].style.left = self.options.slideAdjPct + '%';
+			classie.add(self.slides[self.current - 1], self.options.class.previous);
 		}
 		if (self.current != self.slidesCount - 1) {
-			self.slides[self.current + 1].style.left = '-' + self.options.slideAdjPct + '%';
+			classie.add(self.slides[self.current + 1], self.options.class.next);
 		}
 	}
 

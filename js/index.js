@@ -32,7 +32,7 @@
 	btnSwitch = document.querySelector('button.slider-switch');
 	btnSwitch.addEventListener('click', toggleSlideshow);
 
-	document.querySelectorAll('.subtitle').forEach(function(el) {
+	document.querySelectorAll('.timestamp').forEach(function(el) {
 		el.innerHTML += moment().startOf('year').fromNow();
 	});
 } ());

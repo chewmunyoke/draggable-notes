@@ -2,6 +2,8 @@
 
 A horizontal scrolling notes app available in a big or small carousel. Easy navigation: just scroll up/down in your web browser, or drag left/right in your mobile browser. Click/tap on the arrow button at the bottom of each note to maximize the note and reveal more of its contents; click/tap again to minimize it.
 
+**Demo:** [https://chewmunyoke.github.io/draggable-notes/](https://chewmunyoke.github.io/draggable-notes/)
+
 **Note:** This experimental project is made for demonstration purpose only and not intended for production.
 
 ## Navigation in web browser
