@@ -2,13 +2,12 @@
  * Based on: dragslideshow.js v1.0.0
  * https://tympanus.net/codrops/2014/06/26/draggable-dual-view-slideshow/
  * http://www.codrops.com
- *
- * Licensed under the MIT license.
- * http://www.opensource.org/licenses/mit-license.php
- *
  */
 
-;(function(window) {
+const classie = require('desandro-classie');
+const Dragdealer = require('./dragdealer.js');
+
+//;(function(window) {
 
 	'use strict';
 
@@ -75,8 +74,8 @@
 		slideWidthPct : 80, // width percentage of slide in slider, to calculate actual width & margin of each slide in slider
 		slideContentMargin : 20, // total horizontal margin of '.slider .slide.show', to calculate actual width of slide when shown
 		element: {
-			slider : 'section.dragdealer',
-			handle : 'div.handle',
+			slider : '.slider',
+			handle : '.handle',
 			contentSwitch : 'button.content-switch',
 			contentSwitchContainer : '.content-switch-container',
 		},
@@ -397,6 +396,8 @@
 	}
 
 	// Add to global namespace
-	window.DragSlideshow = DragSlideshow;
+	//window.DragSlideshow = DragSlideshow;
 
-}) (window);
+	module.exports = DragSlideshow;
+
+//})(window);

@@ -1,4 +1,8 @@
-(function() {
+const moment = require('moment');
+const classie = require('desandro-classie');
+const DragSlideshow = require('./dragslideshow.js');
+
+(function(window) {
 	var toggleBtn = function() {
 		if (slideshow.isFullscreen) {
 			classie.add(btnSwitch, 'view-maxi');
@@ -35,4 +39,4 @@
 	document.querySelectorAll('.timestamp').forEach(function(el) {
 		el.innerHTML += moment().startOf('year').fromNow();
 	});
-} ());
+}());

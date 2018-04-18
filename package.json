@@ -1,0 +1,36 @@
+{
+  "name": "draggable-notes",
+  "version": "1.0.0",
+  "description": "A horizontal scrolling notes app available in a big or small carousel. Easy navigation: just scroll up/down in your web browser, or drag left/right in your mobile browser. Click/tap on the arrow button at the bottom of each note to maximize the note and reveal more of its contents; click/tap again to minimize it.",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chewmunyoke/draggable-notes.git"
+  },
+  "keywords": [],
+  "author": "Angeline Chew",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chewmunyoke/draggable-notes/issues"
+  },
+  "homepage": "https://github.com/chewmunyoke/draggable-notes#readme",
+  "devDependencies": {
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^0.28.11",
+    "extract-loader": "^2.0.1",
+    "file-loader": "^1.1.11",
+    "node-sass": "^4.8.3",
+    "postcss-loader": "^2.1.4",
+    "sass-loader": "^7.0.1",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
+  },
+  "dependencies": {
+    "desandro-classie": "^1.0.1",
+    "moment": "^2.22.1"
+  }
+}

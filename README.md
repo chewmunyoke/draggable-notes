@@ -21,13 +21,21 @@ A horizontal scrolling notes app available in a big or small carousel. Easy navi
 - Down arrow button
 	- Located at the top of the maximized note. Click/tap on it to minimize the note.
 
+## Installation
+
+```
+cd /path/to/project/folder/
+npm install --save-dev webpack webpack-cli
+npm install
+npm run build
+```
+
 ## Task list
 
 - [ ] Adding, updating & deleting notes
 - [ ] User login
 - [ ] Additional format for notes
 - [ ] Cross browser testing
-- [ ] CSS preprocessor
 
 ## Credits
 
