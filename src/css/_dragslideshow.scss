@@ -21,9 +21,8 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 	}
 }
 
-.container,
 .slideshow,
-.slider .handle,
+.dragger .handle,
 .slide .note {
 	overflow: hidden;
 	width: 100%;
@@ -129,7 +128,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 	transition-property: transform;
 	transition-duration: 0.5s;
 	transition-timing-function: $cubic-bezier;
-	.slider {
+	.dragger {
 		position: relative;
 		top: 40%;
 		margin: 0 auto;
@@ -143,7 +142,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 				background: none;
 			}
 		}
-		&.slider-small .slide {
+		&.dragger-small .slide {
 			.note {
 				border-radius: 10px;
 			}
@@ -176,7 +175,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 		/* needed for onEndTransitionFn */
 		transform: translate3d(0, 0, 0);
 		transition-duration: 1s;
-		.slider.slider-large {
+		.dragger.dragger-large {
 			top: 0;
 			height: 100%;
 			transition-duration: 1s;
@@ -272,7 +271,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 }
 
 /* Switch Button */
-button.slider-switch {
+button.dragger-switch {
 	position: relative;
 	float: right;
 	overflow: hidden;
@@ -309,7 +308,7 @@ button.slider-switch {
 		rgba(255, 255, 255, 0) 100%);
 	transition: top 0.5s $cubic-bezier;
 }
-.slider-small .content-switch-container {
+.dragger-small .content-switch-container {
 	opacity: 0;
 	pointer-events: none;
 }
@@ -362,7 +361,7 @@ button.content-switch {
 	}
 }
 
-.slider-large button.content-switch {
+.dragger-large button.content-switch {
 	transition: opacity 0.5s, color 0.5s, border-color 0.5s;
 }
 
@@ -382,37 +381,37 @@ button.content-switch {
 
 /* Switching Process */
 .slideshow {
-	.slider.slider-large {
+	.dragger.dragger-large {
 		transition-property: top;
 		transition-duration: 0.5s;
 		transition-timing-function: $cubic-bezier;
 	}
-	&.switch-min .slider.slider-large,
-	&.switch-max .slider.slider-small {
+	&.switch-min .dragger.dragger-large,
+	&.switch-max .dragger.dragger-small {
 		transition-property: transform;
 		transition-duration: 0.6s;
 		transition-timing-function: $cubic-bezier;
 	}
-	&.switch-show .slider.slider-large {
+	&.switch-show .dragger.dragger-large {
 		transition-property: top, height;
 	}
-	&:not(.switch-min):not(.switch-show) .slider.slider-large .slide.previous,
-	&.switch-max .slider-small .slide.previous {
+	&:not(.switch-min):not(.switch-show) .dragger.dragger-large .slide.previous,
+	&.switch-max .dragger-small .slide.previous {
 		left: 4.5%;
 	}
-	&:not(.switch-min):not(.switch-show) .slider.slider-large .slide.next,
-	&.switch-max .slider-small .slide.next {
+	&:not(.switch-min):not(.switch-show) .dragger.dragger-large .slide.next,
+	&.switch-max .dragger-small .slide.next {
 		left: -4.5%;
 	}
-	&.switch-min .slider.slider-large .slide {
+	&.switch-min .dragger.dragger-large .slide {
 		background-color: #dfe3e3;
 	}
-	&.switch-max .slider.slider-small .slide {
+	&.switch-max .dragger.dragger-small .slide {
 		background-color: #dfe3e3;
 		border-radius: 10px;
 	}
-	&.switch-min .slider.slider-large .slide > *,
-	&.switch-max .slider.slider-small .slide > * {
+	&.switch-min .dragger.dragger-large .slide > *,
+	&.switch-max .dragger.dragger-small .slide > * {
 		/* fade out everything */
 		opacity: 0;
 		transition: none;
@@ -439,7 +438,7 @@ button.content-switch {
 	}
 }
 @media screen and (max-width: 650px) {
-	button.slider-switch {
+	button.dragger-switch {
 		display: none;
 	}
 }
@@ -447,10 +446,10 @@ button.content-switch {
 	.header {
 		top: 2em;
 	}
-	.slider {
+	.dragger {
 		top: 35%;
 		height: 65%;
-		&.slider-small {
+		&.dragger-small {
 			.note {
 				padding: 10px;
 				.title-container {
