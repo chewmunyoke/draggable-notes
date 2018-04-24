@@ -11,7 +11,7 @@
 					<div class="slide"
 						:class="slideClass(index)"
 						:style="slideStyle(index)"
-						v-on:click="slideClickHandler(index)"
+						@click="slideClickHandler(index)"
 						v-for="(note, index) in notes"
 						:key="index">
 						<div class="note">
@@ -27,7 +27,7 @@
 							:style="containerStyle(index)">
 							<div class="content-switch-wrapper">
 								<button class="content-switch"
-									v-on:click="contentClickHandler">
+									@click="contentClickHandler">
 									Read more
 								</button>
 							</div>
