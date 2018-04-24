@@ -16,10 +16,21 @@
 .no-transition {
 	transition: none !important;
 }
-
 .hide {
 	opacity: 0 !important;
 	pointer-events: none !important;
+}
+
+[v-cloak] {
+	display: none;
+}
+.display-enter-active,
+.display-leave-active {
+	transition: transform 0.5s;
+}
+.display-enter,
+.display-leave-to {
+	transform: translateY(60%);
 }
 
 body {

@@ -37,9 +37,20 @@ module.exports = {
 			}]
 		}, {
 			test: /\.js$/,
-			exclude: /(node_modules)/,
+			exclude: /(node_modules|babel_components)/,
 			use: {
-				loader: 'babel-loader'
+				loader: 'babel-loader',
+				options: {
+					presets: ['env']
+				}
+			}
+		}, {
+			test: /\.vue$/,
+			loader: 'vue-loader',
+			options: {
+				loaders: {
+					js: 'babel-loader'
+				}
 			}
 		}, {
 			test: /\.(eot|svg|otf|ttf|woff|woff2|jpe?g|png|gif)$/,

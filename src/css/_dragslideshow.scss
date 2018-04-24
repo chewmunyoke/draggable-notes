@@ -3,24 +3,25 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 @keyframes slideUpFade {
 	from {
 		opacity: 0;
-		transform: translate3d(0, 30px, 0);
+		transform: translateY(30px);
  	}
 	to {
 		opacity: 1;
-		transform: translate3d(0, 0, 0);
+		transform: translateY(0);
 	}
 }
 @keyframes slideUpFade2 {
 	from {
 		opacity: 0;
-		transform: translate3d(0, 100px, 0);
+		transform: translateY(100px);
 	}
 	to {
 		opacity: 1;
-		transform: translate3d(0, 0, 0);
+		transform: translateY(0);
 	}
 }
 
+.main,
 .slideshow,
 .dragger .handle,
 .slide .note {
@@ -147,6 +148,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 				border-radius: 10px;
 			}
 			.title-container {
+				margin: 0 -10px;
 				animation: slideUpFade 0.4s;
 				span {
 					overflow: hidden;
@@ -154,7 +156,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 					white-space: nowrap;
 				}
 				.title {
-					font-size: 1.5em;
+					font-size: 1.6em;
 				}
 				.subtitle {
 					display: none;
@@ -169,6 +171,9 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 			.content {
 				display: none;
 			}
+		}
+		&.active .slide:active {
+			cursor: grabbing;
 		}
 	}
 	&.show-content {
@@ -188,9 +193,6 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 	position: relative;
 	height: 100%;
 	border-radius: 30px;
-	cursor: grab;
-	user-select: none;
-	-webkit-touch-callout: none;
 	.note {
 		padding: 30px;
 		border-radius: 30px 30px 0 0;
@@ -225,9 +227,6 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 			padding: 10px;
 			transition: opacity 0.3s $cubic-bezier;
 		}
-	}
-	&:active {
-		cursor: grabbing;
 	}
 	&.current {
 		transition-property: margin, width;
@@ -268,6 +267,11 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 			}
 		}
 	}
+	&:not(.show) {
+		cursor: grab;
+		user-select: none;
+		-webkit-touch-callout: none;
+	}
 }
 
 /* Switch Button */
@@ -287,7 +291,7 @@ button.dragger-switch {
 	opacity: 0.7;
 	pointer-events: auto;
 	transition: opacity 0.5s;
-	&.view-maxi {
+	&.view-max {
 		background-image: url(../images/switchmax.svg);
 	}
 	&:hover {
