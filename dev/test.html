@@ -28,7 +28,7 @@
 							<div class="slide"
 								:class="slideClass(index)"
 								:style="slideStyle(index)"
-								v-on:click="slideClickHandler(index)"
+								@click="slideClickHandler(index)"
 								v-for="(note, index) in notes"
 								:key="index">
 								<div class="note">
@@ -39,13 +39,29 @@
 									</div>
 									<div class="content" v-html="note.content">
 									</div>
+									<textarea class="editor" v-html="note.content" style="display: none">
+									</textarea>
 								</div>
-								<div class="content-switch-container"
+								<div class="content-button-container"
 									:style="containerStyle(index)">
-									<div class="content-switch-wrapper">
-										<button class="content-switch"
-											v-on:click="contentClickHandler">
-											Read more
+									<div class="button-wrapper content-switch-wrapper">
+										<button class="button content-switch"
+											@click="contentSwitchHandler">
+										</button>
+									</div>
+									<div class="button-wrapper content-edit-wrapper"
+										:style="contentEditStyle">
+										<button class="button content-edit"
+											@click="contentEditHandler">
+										</button>
+									</div>
+									<div class="button-wrapper content-save-wrapper"
+										:style="contentSaveStyle">
+										<button class="button content-save"
+											@click="contentSaveHandler">
+										</button>&nbsp;
+										<button class="button content-cancel"
+											@click="contentCancelHandler">
 										</button>
 									</div>
 								</div>
@@ -68,6 +84,7 @@
 			</header>
 		</template>
 
+		<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
 		<script src="js/moment.min.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/dragdealer.js"></script>

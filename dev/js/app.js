@@ -19,6 +19,7 @@ let data = {
 		isDisplayed: false,
 		isFullscreen: true,
 		isContent: false,
+		isEditing: false,
 		isAnimating: false,
 		appIsSwitchMax: false,
 		appIsSwitchMin: false,
@@ -219,6 +220,16 @@ var app = new Vue({
 			return {
 				'width': this.handleWidth
 			};
+		},
+		contentEditStyle: function() {
+			return {
+				'display': this.state.appIsShowContent && !this.state.isEditing ? null : 'none'
+			};
+		},
+		contentSaveStyle: function() {
+			return {
+				'display': this.state.appIsShowContent && this.state.isEditing ? null : 'none'
+			};
 		}
 	},
 	methods: {
@@ -358,11 +369,21 @@ var app = new Vue({
 				}
 			}
 		},
-		contentClickHandler: function(event) {
+		contentSwitchHandler: function(event) {
 			this._toggleContent(app.elements.slides[this.state.current]);
+		},
+		contentEditHandler: function(event) {
+			this.state.isEditing = true;
+		},
+		contentSaveHandler: function(event) {
+			this.state.isEditing = false;
+		},
+		contentCancelHandler: function(event) {
+			this.state.isEditing = false;
 		}
 	},
 	created: function() {
+		//feather.replace();
 		setTimeout(function() {
 			fetchData();
 		}, 1000);
