@@ -375,7 +375,7 @@ var app = new Vue({
 		contentEditHandler: function(index) {
 			this.state.isEditing = true;
 			Vue.nextTick(function() {
-				app.editor = new Quill('#editor-' + index, {
+				app.editor = new Quill('#content-' + index, {
 					theme: 'snow',
 					modules: {
 						toolbar: toolbarOptions
@@ -385,8 +385,10 @@ var app = new Vue({
 		},
 		contentSaveHandler: function(index) {
 			// TODO
-			let newContent = app.editor.container.querySelector('.ql-editor').innerHTML;
-			app.notes[index].content = newContent;
+			let newTitle = this.$el.querySelector('#title-' + index).value;
+			let newContent = this.editor.container.querySelector('.ql-editor').innerHTML;
+			this.notes[index].title = newTitle;
+			this.notes[index].content = newContent;
 			this.state.isEditing = false;
 		},
 		contentCancelHandler: function(event) {

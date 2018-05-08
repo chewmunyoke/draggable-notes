@@ -41,7 +41,9 @@
 									</div>
 									<div class="title-editor"
 										v-if="index == state.current && state.isEditing">
-										<textarea v-html="note.title"></textarea>
+										<textarea :id="'title-' + index"
+											v-html="note.title">
+										</textarea>
 									</div>
 									<div class="content"
 										v-if="!(index == state.current && state.isEditing)"
@@ -49,7 +51,7 @@
 									</div>
 									<div class="content-editor"
 										v-if="index == state.current && state.isEditing">
-										<div :id="'editor-' + index"
+										<div :id="'content-' + index"
 											v-html="note.content">
 										</div>
 									</div>

@@ -525,9 +525,6 @@ button.content-cancel {
 	-webkit-transition-duration: 1s;
 	transition-duration: 1s;
 }
-.slide.show .content-edit-wrapper {
-	display: block;
-}
 
 /* Switching Process */
 .slideshow:not(.switch-min):not(.switch-show) .dragger-large .slide.previous,
