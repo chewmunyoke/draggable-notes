@@ -6,6 +6,7 @@
 		<slideshow-component
 			:state="state"
 			:options="options"
+			:toolbarOptions="toolbarOptions"
 			:elements="elements"
 			:notes="notes">
 		</slideshow-component>
@@ -26,6 +27,7 @@
 			isDisplayed: false,
 			isFullscreen: true,
 			isContent: false,
+			isEditing: false,
 			isAnimating: false,
 			appIsSwitchMax: false,
 			appIsSwitchMin: false,
@@ -47,6 +49,14 @@
 			slideWidthPct: 80,
 			slideContentMargin: 20
 		},
+		// Quill.js toolbar options
+		toolbarOptions: [
+			['bold', 'italic', 'underline', 'strike'],
+			[{ 'script': 'sub'}, { 'script': 'super' }],
+			[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+			['blockquote', 'code-block', 'link'],
+			['clean']
+		],
 		elements: {},
 		user: {},
 		notes: []
@@ -87,12 +97,12 @@
 			let keyCode = event.keyCode || event.which,
 				currentSlide = app.elements.slides[app.state.current];
 
-			if (app.state.isContent) {
+			if (app.state.isContent && !app.state.isEditing) {
 				switch (keyCode) {
 					case 38: // Up arrow key
 						// Toggle content only if content is scrolled to topmost
 						if (currentSlide.scrollTop === 0) {
-							app.toggleContent(currentSlide);
+							EventBus.$emit('content-button-toggle', currentSlide);
 						}
 						break;
 				}
@@ -101,7 +111,7 @@
 					case 40: // Down arrow key
 						// Toggle content only if it's fullscreen
 						if (app.state.isFullscreen) {
-							app.toggleContent(currentSlide);
+							EventBus.$emit('content-button-toggle', currentSlide);
 						}
 						break;
 					case 37: // Left arrow key
@@ -123,15 +133,13 @@
 				newData.notes.forEach(function(note) {
 					note.datestamp = moment(note.timestamp).format('LLLL');
 					note.lastUpdated = moment(note.timestamp).fromNow();
-					note.content = '<p>' + note.content + '</p>';
-					note.content = note.content.replace(/\n/g, '</p><p>');
 					app.notes.push(note);
 				});
 				app.user = newData.user;
 				EventBus.$emit('init-dd');
 			}
 		};
-		xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1', true);
+		xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/2', true);
 		setTimeout(function() {
 			xhr.send();
 		}, 500);

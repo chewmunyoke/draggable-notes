@@ -15,21 +15,52 @@
 						v-for="(note, index) in notes"
 						:key="index">
 						<div class="note">
-							<div class="title-container">
+							<div class="title-container"
+								v-if="!(index == state.current && state.isEditing)">
 								<span class="title">{{ note.title }}</span>
 								<span class="subtitle">Last Updated: </span>
-								<span class="timestamp" v-bind:title="note.datestamp">{{ note.lastUpdated }}</span>
+								<span class="timestamp" :title="note.datestamp">{{ note.lastUpdated }}</span>
 							</div>
-							<div class="content" v-html="note.content">
+							<div class="title-editor"
+								v-if="index == state.current && state.isEditing">
+								<textarea :id="'title-' + index"
+									v-html="note.title">
+								</textarea>
+							</div>
+							<div class="content"
+								v-if="!(index == state.current && state.isEditing)"
+								v-html="note.content">
+							</div>
+							<div class="content-editor"
+								v-if="index == state.current && state.isEditing">
+								<div :id="'content-' + index"
+									v-html="note.content">
+								</div>
 							</div>
 						</div>
-						<div class="content-switch-container"
+						<div class="content-button-container"
 							:style="containerStyle(index)">
 							<div class="content-switch-wrapper">
-								<button class="content-switch"
-									@click="contentClickHandler">
-									Read more
-								</button>
+								<div class="button-wrapper content-switch-wrapper">
+									<button class="button content-switch"
+										@click="contentSwitchHandler">
+									</button>
+								</div>
+								<div class="button-wrapper content-edit-wrapper"
+									v-if="index == state.current && state.appIsShowContent && !state.isEditing">
+									<button class="button content-edit"
+										@click="contentEditHandler(index)">
+									</button>
+								</div>
+								<div class="button-wrapper content-save-wrapper"
+									v-if="index == state.current && state.appIsShowContent && state.isEditing">
+									<button class="button content-save"
+										@click="contentSaveHandler(index)">
+									</button>&nbsp;
+									<button class="button content-cancel"
+										@click="contentCancelHandler">
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -40,6 +71,7 @@
 </template>
 
 <script>
+	const Quill = require('quill');
 	import EventBus from '../eventbus.js';
 
 	let docElem = window.document.documentelements,
@@ -57,7 +89,7 @@
 
 	export default {
 		name: 'slideshow-component',
-		props: ['state', 'options', 'elements', 'notes'],
+		props: ['state', 'options', 'toolbarOptions', 'elements', 'notes'],
 		computed: {
 			notesCount: function() {
 				// TODO if zero
@@ -196,7 +228,7 @@
 			/**
 			 * Function to show/hide slide content
 			 */
-			_toggleContent: function(slide) {
+			toggleContent: function(slide) {
 				if (this.state.isAnimating) return false;
 				this.state.isAnimating = true;
 
@@ -206,12 +238,14 @@
 				if (this.state.isContent) {
 					// Enable the dragdealer
 					this.elements.dd.enable();
+					this.elements.dd.bindEventListeners();
 					this.state.appIsShowContent = false;
 					this.state.slideIsShow = false;
 					this.state.containerIsFixed = false;
 				} else {
 					// Disable the dragdealer
 					this.elements.dd.disable();
+					this.elements.dd.unbindEventListeners();
 					this.state.appIsSwitchShow = true;
 					this.state.appIsShowContent = true;
 					this.state.slideIsShow = true;
@@ -253,8 +287,30 @@
 					}
 				}
 			},
-			contentClickHandler: function(event) {
-				this._toggleContent(app.elements.slides[this.state.current]);
+			contentSwitchHandler: function(event) {
+				this.toggleContent(app.elements.slides[this.state.current]);
+			},
+			contentEditHandler: function(index) {
+				this.state.isEditing = true;
+				app.$nextTick(function() {
+					this.elements.editor = new Quill('#content-' + index, {
+						theme: 'snow',
+						modules: {
+							toolbar: app.toolbarOptions
+						}
+					});
+				});
+			},
+			contentSaveHandler: function(index) {
+				// TODO
+				let newTitle = this.$el.querySelector('#title-' + index).value;
+				let newContent = this.elements.editor.container.querySelector('.ql-editor').innerHTML;
+				this.notes[index].title = newTitle;
+				this.notes[index].content = newContent;
+				this.state.isEditing = false;
+			},
+			contentCancelHandler: function(event) {
+				this.state.isEditing = false;
 			}
 		},
 		created: function() {
@@ -264,5 +320,8 @@
 
 	EventBus.$on('dragger-button-toggle', function() {
 		app.toggle();
+	});
+	EventBus.$on('content-button-toggle', function(currentSlide) {
+		app.toggleContent(currentSlide);
 	});
 </script>
