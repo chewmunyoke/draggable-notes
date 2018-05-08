@@ -11,6 +11,7 @@
 		<link href='https://fonts.googleapis.com/css?family=Playfair+Display:900,400|Lato:300,400,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 		<script src="js/modernizr.custom.js"></script>
 	</head>
 	<body>
@@ -32,15 +33,26 @@
 								v-for="(note, index) in notes"
 								:key="index">
 								<div class="note">
-									<div class="title-container">
+									<div class="title-container"
+										v-if="!(index == state.current && state.isEditing)">
 										<span class="title">{{ note.title }}</span>
 										<span class="subtitle">Last Updated: </span>
-										<span class="timestamp" v-bind:title="note.datestamp">{{ note.lastUpdated }}</span>
+										<span class="timestamp" :title="note.datestamp">{{ note.lastUpdated }}</span>
 									</div>
-									<div class="content" v-html="note.content">
+									<div class="title-editor"
+										v-if="index == state.current && state.isEditing">
+										<textarea v-html="note.title"></textarea>
 									</div>
-									<textarea class="editor" v-html="note.content" style="display: none">
-									</textarea>
+									<div class="content"
+										v-if="!(index == state.current && state.isEditing)"
+										v-html="note.content">
+									</div>
+									<div class="content-editor"
+										v-if="index == state.current && state.isEditing">
+										<div :id="'editor-' + index"
+											v-html="note.content">
+										</div>
+									</div>
 								</div>
 								<div class="content-button-container"
 									:style="containerStyle(index)">
@@ -50,15 +62,15 @@
 										</button>
 									</div>
 									<div class="button-wrapper content-edit-wrapper"
-										:style="contentEditStyle">
+										v-if="index == state.current && state.appIsShowContent && !state.isEditing">
 										<button class="button content-edit"
-											@click="contentEditHandler">
+											@click="contentEditHandler(index)">
 										</button>
 									</div>
 									<div class="button-wrapper content-save-wrapper"
-										:style="contentSaveStyle">
+										v-if="index == state.current && state.appIsShowContent && state.isEditing">
 										<button class="button content-save"
-											@click="contentSaveHandler">
+											@click="contentSaveHandler(index)">
 										</button>&nbsp;
 										<button class="button content-cancel"
 											@click="contentCancelHandler">
@@ -85,6 +97,7 @@
 		</template>
 
 		<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+		<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 		<script src="js/moment.min.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/dragdealer.js"></script>

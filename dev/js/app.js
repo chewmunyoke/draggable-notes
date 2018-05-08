@@ -45,6 +45,16 @@ let data = {
 	notes: []
 };
 
+let toolbarOptions = [
+	//[{ 'font': [] }, { 'size': [] }],
+	['bold', 'italic', 'underline', 'strike'],
+	[{ 'script': 'sub'}, { 'script': 'super' }],
+	//[{ 'color': [] }, { 'background': [] }],
+	[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+	['blockquote', 'code-block', 'link'],
+	['clean']
+];
+
 let headerComponent = {
 	template: '#header-component',
 	props: ['state'],
@@ -81,8 +91,6 @@ function fetchData() {
 			newData.notes.forEach(function(note) {
 				note.datestamp = moment(note.timestamp).format('LLLL');
 				note.lastUpdated = moment(note.timestamp).fromNow();
-				note.content = '<p>' + note.content + '</p>';
-				note.content = note.content.replace(/\n/g, '</p><p>');
 				app.notes.push(note);
 			});
 			app.user = newData.user;
@@ -90,7 +98,7 @@ function fetchData() {
 		}
 	};
 	//xhr.open('GET', 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad', true);
-	xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1', true);
+	xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/2', true);
 	xhr.send();
 }
 
@@ -128,7 +136,7 @@ function initDD() {
 			let keyCode = event.keyCode || event.which,
 				currentSlide = app.elements.slides[app.state.current];
 
-			if (app.state.isContent) {
+			if (app.state.isContent && !app.state.isEditing) {
 				switch (keyCode) {
 					case 38: // Up arrow key
 						// Toggle content only if content is scrolled to topmost
@@ -219,16 +227,6 @@ var app = new Vue({
 		handleStyle: function() {
 			return {
 				'width': this.handleWidth
-			};
-		},
-		contentEditStyle: function() {
-			return {
-				'display': this.state.appIsShowContent && !this.state.isEditing ? null : 'none'
-			};
-		},
-		contentSaveStyle: function() {
-			return {
-				'display': this.state.appIsShowContent && this.state.isEditing ? null : 'none'
 			};
 		}
 	},
@@ -322,12 +320,14 @@ var app = new Vue({
 			if (this.state.isContent) {
 				// Enable the dragdealer
 				this.dd.enable();
+				this.dd.bindEventListeners();
 				this.state.appIsShowContent = false;
 				this.state.slideIsShow = false;
 				this.state.containerIsFixed = false;
 			} else {
 				// Disable the dragdealer
 				this.dd.disable();
+				this.dd.unbindEventListeners();
 				this.state.appIsSwitchShow = true;
 				this.state.appIsShowContent = true;
 				this.state.slideIsShow = true;
@@ -372,10 +372,21 @@ var app = new Vue({
 		contentSwitchHandler: function(event) {
 			this._toggleContent(app.elements.slides[this.state.current]);
 		},
-		contentEditHandler: function(event) {
+		contentEditHandler: function(index) {
 			this.state.isEditing = true;
+			Vue.nextTick(function() {
+				app.editor = new Quill('#editor-' + index, {
+					theme: 'snow',
+					modules: {
+						toolbar: toolbarOptions
+					}
+				});
+			});
 		},
-		contentSaveHandler: function(event) {
+		contentSaveHandler: function(index) {
+			// TODO
+			let newContent = app.editor.container.querySelector('.ql-editor').innerHTML;
+			app.notes[index].content = newContent;
 			this.state.isEditing = false;
 		},
 		contentCancelHandler: function(event) {
