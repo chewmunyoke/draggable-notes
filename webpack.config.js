@@ -10,6 +10,9 @@ module.exports = {
 	mode: 'development',
 	module: {
 		rules: [{
+			test: /\.(eot|svg|otf|ttf|woff|woff2|jpe?g|png|gif)$/,
+			loader: 'file-loader'
+		}, {
 			test: /\.scss$/,
 			use: [{
 				loader: 'file-loader',
@@ -36,25 +39,12 @@ module.exports = {
 				}
 			}]
 		}, {
-			test: /\.js$/,
-			exclude: /(node_modules|babel_components)/,
-			use: {
-				loader: 'babel-loader',
-				options: {
-					presets: ['env']
-				}
-			}
-		}, {
 			test: /\.vue$/,
-			loader: 'vue-loader',
-			options: {
-				loaders: {
-					js: 'babel-loader'
-				}
-			}
+			loader: 'vue-loader'
 		}, {
-			test: /\.(eot|svg|otf|ttf|woff|woff2|jpe?g|png|gif)$/,
-			loader: 'file-loader'
+			test: /\.js$/,
+			exclude: /(node_modules|bowel_components)/,
+			loader: 'babel-loader',
 		}]
 	},
 	plugins: [

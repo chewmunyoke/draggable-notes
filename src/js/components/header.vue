@@ -11,32 +11,29 @@
 </template>
 
 <script>
-	import EventBus from '../eventbus.js';
-
 	export default {
 		name: 'header-component',
-		props: ['state'],
 		data() {
 			return {
-				appTitle: 'Draggable Notes',
-				appMessage: 'This mobile version does not have the slideshow switch'
+				appTitle: this.$store.state.appTitle,
+				appMessage: this.$store.state.appMessage
 			}
 		},
 		computed: {
 			headerClass: function() {
 				return {
-					'hide': this.state.appIsShowContent
+					'hide': this.$store.state.status.appIsSwitchShow
 				};
 			},
 			draggerButtonClass: function() {
 				return {
-					'view-max': this.state.draggerButtonIsToggled
+					'view-max': this.$store.state.status.draggerButtonIsToggled
 				}
 			}
 		},
 		methods: {
-			draggerClickHandler: function(event) {
-				EventBus.$emit('dragger-button-toggle');
+			draggerClickHandler: function() {
+				this.$store.commit('toggle');
 			}
 		}
 	};
