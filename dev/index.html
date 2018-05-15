@@ -16,11 +16,11 @@
 	</head>
 	<body>
 		<section id="app" class="main" v-cloak>
-			<header-component :state="state"></header-component>
+			<header-component :status="status"></header-component>
 			<transition name="display">
 				<div class="slideshow"
 					:class="slideshowClass"
-					v-show="state.isDisplayed">
+					v-show="status.isDisplayed">
 					<div class="dragdealer dragger"
 						:class="draggerClass"
 						:style="draggerStyle">
@@ -34,23 +34,23 @@
 								:key="index">
 								<div class="note">
 									<div class="title-container"
-										v-if="!(index == state.current && state.isEditing)">
+										v-if="!(index == status.current && status.isEditing)">
 										<span class="title">{{ note.title }}</span>
 										<span class="subtitle">Last Updated: </span>
 										<span class="timestamp" :title="note.datestamp">{{ note.lastUpdated }}</span>
 									</div>
 									<div class="title-editor"
-										v-if="index == state.current && state.isEditing">
+										v-if="index == status.current && status.isEditing">
 										<textarea :id="'title-' + index"
 											v-html="note.title">
 										</textarea>
 									</div>
 									<div class="content"
-										v-if="!(index == state.current && state.isEditing)"
+										v-if="!(index == status.current && status.isEditing)"
 										v-html="note.content">
 									</div>
 									<div class="content-editor"
-										v-if="index == state.current && state.isEditing">
+										v-if="index == status.current && status.isEditing">
 										<div :id="'content-' + index"
 											v-html="note.content">
 										</div>
@@ -64,13 +64,13 @@
 										</button>
 									</div>
 									<div class="button-wrapper content-edit-wrapper"
-										v-if="index == state.current && state.appIsShowContent && !state.isEditing">
+										v-if="index == status.current && status.appIsShowContent && !status.isEditing">
 										<button class="button content-edit"
 											@click="contentEditHandler(index)">
 										</button>
 									</div>
 									<div class="button-wrapper content-save-wrapper"
-										v-if="index == state.current && state.appIsShowContent && state.isEditing">
+										v-if="index == status.current && status.appIsShowContent && status.isEditing">
 										<button class="button content-save"
 											@click="contentSaveHandler(index)">
 										</button>&nbsp;
@@ -102,7 +102,9 @@
 		<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 		<script src="js/moment.min.js"></script>
 		<script src="js/vue.js"></script>
+		<script src="js/vuex.js"></script>
 		<script src="js/dragdealer.js"></script>
+		<script src="js/store.js"></script>
 		<script src="js/app.js"></script>
 	</body>
 </html>
