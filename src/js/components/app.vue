@@ -4,14 +4,7 @@
 			:status="status">
 		</header-component>
 		<slideshow-component
-<<<<<<< HEAD
-			:state="state"
-			:options="options"
-			:toolbarOptions="toolbarOptions"
-			:elements="elements"
-=======
 			:status="status"
->>>>>>> dev
 			:notes="notes">
 		</slideshow-component>
 	</section>
@@ -52,24 +45,6 @@
 	Vue.use(Vuex);
 	let store = new Vuex.Store({
 		state: {
-<<<<<<< HEAD
-			current: 0,
-			isDisplayed: false,
-			isFullscreen: true,
-			isContent: false,
-			isEditing: false,
-			isAnimating: false,
-			appIsSwitchMax: false,
-			appIsSwitchMin: false,
-			appIsSwitchShow: false,
-			appIsShowContent: false,
-			draggerButtonIsToggled: false,
-			draggerIsToggled: false,
-			draggerIsTransforming: false,
-			slideIsShow: false,
-			containerIsFixed: false,
-			preserve3dSlides: false // fixes rendering problem in firefox
-=======
 			appTitle: 'Draggable Notes',
 			appMessage: 'This mobile version does not have the slideshow switch',
 			// App initial state
@@ -107,7 +82,6 @@
 				password: "test"
 			},
 			notes: []
->>>>>>> dev
 		},
 		getters: {
 			notesCount: function(state) {
@@ -194,20 +168,6 @@
 				};
 			}
 		},
-<<<<<<< HEAD
-		// Quill.js toolbar options
-		toolbarOptions: [
-			['bold', 'italic', 'underline', 'strike'],
-			[{ 'script': 'sub'}, { 'script': 'super' }],
-			[{ 'list': 'ordered'}, { 'list': 'bullet' }],
-			['blockquote', 'code-block', 'link'],
-			['clean']
-		],
-		elements: {},
-		user: {},
-		notes: []
-	};
-=======
 		mutations: {
 			login(state, user) {
 				Object.keys(user).forEach(function(key) {
@@ -392,7 +352,6 @@
 			}
 		}
 	});
->>>>>>> dev
 
 	var app;
 
@@ -455,21 +414,13 @@
 			let keyCode = event.keyCode || event.which,
 				currentSlide = app.elements.slides[app.status.current];
 
-<<<<<<< HEAD
-			if (app.state.isContent && !app.state.isEditing) {
-=======
 			if (app.status.isContent && !app.status.isEditing) {
->>>>>>> dev
 				switch (keyCode) {
 					case 38: // Up arrow key
 						// Toggle content only if content is scrolled to topmost
 						if (currentSlide.scrollTop === 0) {
-<<<<<<< HEAD
-							EventBus.$emit('content-button-toggle', currentSlide);
-=======
 							//EventBus.$emit('content-button-toggle', currentSlide);
 							app.$store.commit('toggleContent', currentSlide);
->>>>>>> dev
 						}
 						break;
 				}
@@ -477,14 +428,9 @@
 				switch (keyCode) {
 					case 40: // Down arrow key
 						// Toggle content only if it's fullscreen
-<<<<<<< HEAD
-						if (app.state.isFullscreen) {
-							EventBus.$emit('content-button-toggle', currentSlide);
-=======
 						if (app.status.isFullscreen) {
 							//EventBus.$emit('content-button-toggle', currentSlide);
 							app.$store.commit('toggleContent', currentSlide);
->>>>>>> dev
 						}
 						break;
 					case 37: // Left arrow key
@@ -498,46 +444,4 @@
 		});
 	}
 
-<<<<<<< HEAD
-	EventBus.$on('fetch-data', function() {
-		let xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				let newData = JSON.parse(this.responseText);
-				newData.notes.forEach(function(note) {
-					note.datestamp = moment(note.timestamp).format('LLLL');
-					note.lastUpdated = moment(note.timestamp).fromNow();
-					app.notes.push(note);
-				});
-				app.user = newData.user;
-				EventBus.$emit('init-dd');
-			}
-		};
-		xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/2', true);
-		setTimeout(function() {
-			xhr.send();
-		}, 500);
-	});
-
-	EventBus.$on('init-dd', function() {
-		app.$nextTick(function() {
-			app.elements = {
-				slideshow: app.$el.querySelector('.slideshow'),
-				dragger: app.$el.querySelector('.dragger'),
-				handle: app.$el.querySelector('.handle')
-			};
-			app.elements.slides = [].slice.call(app.elements.handle.children);
-			app.elements.dd = new Dragdealer(app.elements.dragger, {
-				steps: app.notes.length,
-				speed: 0.3,
-				loose: true,
-				callback: function(x, y) {
-					app.state.current = app.elements.dd.getStep()[0] - 1;
-				}
-			});
-		});
-		app.state.isDisplayed = true;
-	});
-=======
->>>>>>> dev
 </script>
