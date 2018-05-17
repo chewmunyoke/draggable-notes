@@ -25,17 +25,7 @@ let headerComponent = {
 			'draggerButtonClass'
 		])
 	},
-	methods: {
-		draggerClickHandler: function() {
-			this.$store.commit('draggerClickHandler', this.$parent);
-		}
-	}
-	/*
-	methods: {
-		...mapMutations([
-			'draggerClickHandler'
-		])
-	}*/
+	methods: mapMutations(['draggerClickHandler'])
 };
 
 let app = new Vue({
@@ -47,6 +37,7 @@ let app = new Vue({
 	computed: {
 		...mapState([
 			'status',
+			'elements',
 			'user',
 			'notes'
 		]),
@@ -61,28 +52,14 @@ let app = new Vue({
 		])
 	},
 	methods: {
-		slideClickHandler: function(index) {
-			this.$store.commit('slideClickHandler', this, index);
-		},
-		contentSwitchHandler: function() {
-			this.$store.commit('contentSwitchHandler', this);
-		},
-		contentEditHandler: function(index) {
-			this.$store.commit('contentEditHandler', this, index);
-		},
-		contentDeleteHandler: function(index) {
-			// TODO confirmation
-			if (confirm('Are you sure you want to delete this note?')) {
-				this.$store.commit('contentDeleteHandler', index);
-			}
-		},
-		contentSaveHandler: function(index) {
-			// TODO show progress spinner
-			this.$store.commit('contentSaveHandler', this, index);
-		},
-		contentCancelHandler: function() {
-			this.$store.commit('contentCancelHandler');
-		}
+		...mapMutations([
+			'slideClickHandler',
+			'contentSwitchHandler',
+			'contentEditHandler',
+			'contentDeleteHandler',
+			'contentSaveHandler',
+			'contentCancelHandler'
+		])
 	},
 	mounted: function() {
 		let app = this;
@@ -108,7 +85,8 @@ function initDD(app) {
 			app.$store.commit('setCurrentNote', this.getStep()[0] - 1);
 		}
 	});
-	app.elements = elements;
+
+	window.elements = elements;
 	initEvents(app);
 }
 
@@ -117,10 +95,10 @@ function initEvents(app) {
 		if (!app.status.isContent) {
 			if (event.deltaY < 0) {
 				// Scroll up = previous slide
-				app.elements.dd.setStep(app.status.current);
+				window.elements.dd.setStep(app.status.current);
 			} else {
 				// Scroll down = next slide
-				app.elements.dd.setStep(app.status.current + 2);
+				window.elements.dd.setStep(app.status.current + 2);
 			}
 		}
 	});
@@ -133,7 +111,7 @@ function initEvents(app) {
 				case 38: // Up arrow key
 					// Toggle content only if content is scrolled to topmost
 					if (currentSlide.scrollTop === 0) {
-						app.$store.commit('toggleContent', app);
+						app.$store.commit('toggleContent');
 					}
 					break;
 			}
@@ -142,14 +120,14 @@ function initEvents(app) {
 				case 40: // Down arrow key
 					// Toggle content only if it's fullscreen
 					if (app.status.isFullscreen) {
-						app.$store.commit('toggleContent', app);
+						app.$store.commit('toggleContent');
 					}
 					break;
 				case 37: // Left arrow key
-					app.elements.dd.setStep(app.status.current);
+					window.elements.dd.setStep(app.status.current);
 					break;
 				case 39: // Right arrow key
-					app.elements.dd.setStep(app.status.current + 2);
+					window.elements.dd.setStep(app.status.current + 2);
 					break;
 			}
 		}

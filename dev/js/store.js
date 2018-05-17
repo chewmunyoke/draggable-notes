@@ -41,14 +41,6 @@ var store = new Vuex.Store({
 			slideWidthPct: 80,
 			slideContentMargin: 20
 		},
-		// Key elements of app
-		elements: {
-			slideshow: undefined,
-			dragger: undefined,
-			handle: undefined,
-			slides: undefined,
-			dd: undefined
-		},
 		user: {
 			user_id: 0,
 			name: "Test User",
@@ -155,7 +147,7 @@ var store = new Vuex.Store({
 	mutations: {
 		login(state, user) {
 			for (let key in user) {
-				state.user[key] = user[key];
+				Vue.set(state.user, key, user[key]);
 			}
 		},
 		loadNotes(state, notes) {
@@ -174,7 +166,9 @@ var store = new Vuex.Store({
 		/**
 		 * Function to toggle between fullscreen and minimized slideshow
 		 */
-		toggle(state, app) {
+		toggle(state) {
+			let self = this;
+
 			if (state.status.isAnimating) return false;
 			state.status.isAnimating = true;
 
@@ -195,19 +189,19 @@ var store = new Vuex.Store({
 
 			let onEndTransitionFn = function(event) {
 				if (support.transitions) {
-					if (event.propertyName.indexOf('transform') === -1 || event.target !== app.elements.dragger) return;
+					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.dragger) return;
 					this.removeEventListener(transEndEventName, onEndTransitionFn);
 				}
-				app.$store.commit('toggleEnd', app);
+				self.commit('toggleEnd');
 			};
 
 			if (support.transitions) {
-				app.elements.dragger.addEventListener(transEndEventName, onEndTransitionFn);
+				window.elements.dragger.addEventListener(transEndEventName, onEndTransitionFn);
 			} else {
 				onEndTransitionFn();
 			}
 		},
-		toggleEnd(state, app) {
+		toggleEnd(state) {
 			// Remove switch classes
 			if (state.status.isFullscreen) {
 				state.status.appIsSwitchMin = false;
@@ -225,33 +219,35 @@ var store = new Vuex.Store({
 			// To be executed after the DOM is updated with the computed class changes
 			Vue.nextTick(function() {
 				// Reinstatiate the dragger with the "reflow" method
-				app.elements.dd.reflow();
+				window.elements.dd.reflow();
 			});
 		},
 		/**
 		 * Function to show/hide slide content
 		 */
-		toggleContent(state, app) {
+		toggleContent(state) {
+			let self = this;
+
 			if (state.status.isAnimating) return false;
 			state.status.isAnimating = true;
 
 			// TODO callback
 			// state.options.onToggleContent();
 
-			let slide = app.elements.slides[state.status.current];
+			let slide = window.elements.slides[state.status.current];
 			slide.scrollTop = 0;
 
 			if (state.status.isContent) {
 				// Enable the dragdealer
-				app.elements.dd.enable();
-				app.elements.dd.bindEventListeners();
+				window.elements.dd.enable();
+				window.elements.dd.bindEventListeners();
 				state.status.appIsShowContent = false;
 				state.status.slideIsShow = false;
 				state.status.containerIsFixed = false;
 			} else {
 				// Disable the dragdealer
-				app.elements.dd.disable();
-				app.elements.dd.unbindEventListeners();
+				window.elements.dd.disable();
+				window.elements.dd.unbindEventListeners();
 				state.status.appIsSwitchShow = true;
 				state.status.appIsShowContent = true;
 				state.status.slideIsShow = true;
@@ -259,14 +255,14 @@ var store = new Vuex.Store({
 
 			let onEndTransitionFn = function(event) {
 				if (support.transitions) {
-					if (event.propertyName.indexOf('transform') === -1 || event.target !== app.elements.slideshow) return;
+					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.slideshow) return;
 					this.removeEventListener(transEndEventName, onEndTransitionFn);
 				}
-				app.$store.commit('toggleContentEnd');
+				self.commit('toggleContentEnd');
 			};
 
 			if (support.transitions) {
-				app.elements.slideshow.addEventListener(transEndEventName, onEndTransitionFn);
+				window.elements.slideshow.addEventListener(transEndEventName, onEndTransitionFn);
 			} else {
 				onEndTransitionFn();
 			}
@@ -285,25 +281,25 @@ var store = new Vuex.Store({
 			// TODO Callback
 			// state.options.onToggleContentComplete();
 		},
-		draggerClickHandler(state, app) {
-			this.commit('toggle', app);
+		draggerClickHandler(state) {
+			this.commit('toggle');
 		},
-		slideClickHandler(state, app, index) {
-			if (!state.status.isFullscreen && !state.status.isAnimating && !app.elements.dd.activity) {
+		slideClickHandler(state, index) {
+			if (!state.status.isFullscreen && !state.status.isAnimating && !window.elements.dd.activity) {
 				if (index === state.status.current) {
-					this.commit('toggle', app);
+					this.commit('toggle');
 				} else {
-					app.elements.dd.setStep(index + 1);
+					window.elements.dd.setStep(index + 1);
 				}
 			}
 		},
-		contentSwitchHandler(state, app) {
-			this.commit('toggleContent', app);
+		contentSwitchHandler(state) {
+			this.commit('toggleContent');
 		},
-		contentEditHandler(state, app, index) {
+		contentEditHandler(state, index) {
 			state.status.isEditing = true;
 			Vue.nextTick(function() {
-				app.elements.editor = new Quill('#content-' + index, {
+				window.elements.editor = new Quill('#content-' + index, {
 					theme: 'snow',
 					modules: {
 						toolbar: toolbarOptions
@@ -312,21 +308,21 @@ var store = new Vuex.Store({
 			});
 		},
 		contentDeleteHandler(state, index) {
-			this.commit('toggleContent', app);
+			this.commit('toggleContent');
 			console.log(index + ', ' + this.getters.notesCount);
 			if (index >= this.getters.notesCount - 1) {
 				// If the last note is deleted
-				app.elements.dd.setStep(index - 1);
+				window.elements.dd.setStep(index - 1);
 			} else {
-				app.elements.dd.setStep(index);
+				window.elements.dd.setStep(index);
 			}
 			state.notes.splice(index, 1);
 			// reinitialize dd?
-			app.elements.dd.reflow();
+			window.elements.dd.reflow();
 		},
-		contentSaveHandler(state, app, index) {
-			let newTitle = app.$el.querySelector('#title-' + index).value;
-			let newContent = app.elements.editor.container.querySelector('.ql-editor').innerHTML;
+		contentSaveHandler(state, index) {
+			let newTitle = document.querySelector('#title-' + index).value;
+			let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
 			state.notes[index].title = newTitle;
 			state.notes[index].content = newContent;
 			state.status.isEditing = false;
