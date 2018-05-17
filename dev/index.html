@@ -16,7 +16,7 @@
 	</head>
 	<body>
 		<section id="app" class="main" v-cloak>
-			<header-component :status="status"></header-component>
+			<header-component></header-component>
 			<transition name="display">
 				<div class="slideshow"
 					:class="slideshowClass"
@@ -68,6 +68,9 @@
 										<button class="button content-edit"
 											@click="contentEditHandler(index)">
 										</button>
+										<button class="button content-delete"
+											@click="contentDeleteHandler(index)">
+										</button>
 									</div>
 									<div class="button-wrapper content-save-wrapper"
 										v-if="index == status.current && status.appIsShowContent && status.isEditing">
@@ -92,7 +95,7 @@
 				<span class="message">{{ appMessage }}</span>
 				<button class="dragger-switch"
 					:class="draggerButtonClass"
-					v-on:click="draggerClickHandler">
+					@click="draggerClickHandler">
 					Switch view
 				</button>
 			</header>

@@ -9,6 +9,7 @@ let toolbarOptions = [
 ];
 
 var store = new Vuex.Store({
+	strict: true, //process.env.NODE_ENV !== 'production',
 	state: {
 		appTitle: 'Draggable Notes',
 		appMessage: 'This mobile version does not have the slideshow switch',
@@ -39,6 +40,14 @@ var store = new Vuex.Store({
 			draggerHeightPct: 60,
 			slideWidthPct: 80,
 			slideContentMargin: 20
+		},
+		// Key elements of app
+		elements: {
+			slideshow: undefined,
+			dragger: undefined,
+			handle: undefined,
+			slides: undefined,
+			dd: undefined
 		},
 		user: {
 			user_id: 0,
@@ -75,6 +84,16 @@ var store = new Vuex.Store({
 		},
 		handleWidth: function(state, getters) {
 			return getters.notesCount * state.options.draggerWidthPct + '%';
+		},
+		headerClass: function(state) {
+			return {
+				'hide': state.status.appIsSwitchShow
+			};
+		},
+		draggerButtonClass: function(state) {
+			return {
+				'view-max': state.status.draggerButtonIsToggled
+			}
 		},
 		slideshowClass: function(state) {
 			return {
@@ -135,9 +154,9 @@ var store = new Vuex.Store({
 	},
 	mutations: {
 		login(state, user) {
-			Object.keys(user).forEach(function(key) {
+			for (let key in user) {
 				state.user[key] = user[key];
-			});
+			}
 		},
 		loadNotes(state, notes) {
 			notes.forEach(function(note) {
@@ -146,16 +165,16 @@ var store = new Vuex.Store({
 				state.notes.push(note);
 			});
 		},
-		currentNote(state, index) {
-			state.status.current = index;
-		},
-		display(state, flag) {
+		displayNotes(state, flag) {
 			state.status.isDisplayed = flag;
+		},
+		setCurrentNote(state, index) {
+			state.status.current = index;
 		},
 		/**
 		 * Function to toggle between fullscreen and minimized slideshow
 		 */
-		toggle(state) {
+		toggle(state, app) {
 			if (state.status.isAnimating) return false;
 			state.status.isAnimating = true;
 
@@ -179,26 +198,7 @@ var store = new Vuex.Store({
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== app.elements.dragger) return;
 					this.removeEventListener(transEndEventName, onEndTransitionFn);
 				}
-
-				// Remove switch classes
-				if (state.status.isFullscreen) {
-					state.status.appIsSwitchMin = false;
-					state.status.draggerIsToggled = true;
-				} else {
-					state.status.appIsSwitchMax = false;
-					state.status.draggerIsToggled = false;
-					state.status.preserve3dSlides = false;
-				}
-				state.status.draggerIsTransforming = false;
-
-				state.status.isFullscreen = !state.status.isFullscreen;
-				state.status.isAnimating = false;
-
-				// To be executed after the DOM is updated with the computed class changes
-				Vue.nextTick(function() {
-					// Reinstatiate the dragger with the "reflow" method
-					app.elements.dd.reflow();
-				});
+				app.$store.commit('toggleEnd', app);
 			};
 
 			if (support.transitions) {
@@ -207,16 +207,40 @@ var store = new Vuex.Store({
 				onEndTransitionFn();
 			}
 		},
+		toggleEnd(state, app) {
+			// Remove switch classes
+			if (state.status.isFullscreen) {
+				state.status.appIsSwitchMin = false;
+				state.status.draggerIsToggled = true;
+			} else {
+				state.status.appIsSwitchMax = false;
+				state.status.draggerIsToggled = false;
+				state.status.preserve3dSlides = false;
+			}
+			state.status.draggerIsTransforming = false;
+
+			state.status.isFullscreen = !state.status.isFullscreen;
+			state.status.isAnimating = false;
+
+			// To be executed after the DOM is updated with the computed class changes
+			Vue.nextTick(function() {
+				// Reinstatiate the dragger with the "reflow" method
+				app.elements.dd.reflow();
+			});
+		},
 		/**
 		 * Function to show/hide slide content
 		 */
-		toggleContent(state, slide) {
+		toggleContent(state, app) {
 			if (state.status.isAnimating) return false;
 			state.status.isAnimating = true;
 
 			// TODO callback
 			// state.options.onToggleContent();
+
+			let slide = app.elements.slides[state.status.current];
 			slide.scrollTop = 0;
+
 			if (state.status.isContent) {
 				// Enable the dragdealer
 				app.elements.dd.enable();
@@ -238,19 +262,7 @@ var store = new Vuex.Store({
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== app.elements.slideshow) return;
 					this.removeEventListener(transEndEventName, onEndTransitionFn);
 				}
-
-				// Set properties after transition ended
-				if (app.status.isContent) {
-					app.status.appIsSwitchShow = false;
-				} else {
-					app.status.containerIsFixed = true;
-				}
-
-				app.status.isContent = !app.status.isContent;
-				app.status.isAnimating = false;
-
-				// TODO Callback
-				// app.options.onToggleContentComplete();
+				app.$store.commit('toggleContentEnd');
 			};
 
 			if (support.transitions) {
@@ -259,22 +271,39 @@ var store = new Vuex.Store({
 				onEndTransitionFn();
 			}
 		},
-		slideClickHandler(state, index) {
+		toggleContentEnd(state) {
+			// Set properties after transition ended
+			if (state.status.isContent) {
+				state.status.appIsSwitchShow = false;
+			} else {
+				state.status.containerIsFixed = true;
+			}
+
+			state.status.isContent = !state.status.isContent;
+			state.status.isAnimating = false;
+
+			// TODO Callback
+			// state.options.onToggleContentComplete();
+		},
+		draggerClickHandler(state, app) {
+			this.commit('toggle', app);
+		},
+		slideClickHandler(state, app, index) {
 			if (!state.status.isFullscreen && !state.status.isAnimating && !app.elements.dd.activity) {
 				if (index === state.status.current) {
-					this.commit('toggle');
+					this.commit('toggle', app);
 				} else {
 					app.elements.dd.setStep(index + 1);
 				}
 			}
 		},
-		contentSwitchHandler(state) {
-			this.commit('toggleContent', app.elements.slides[state.status.current]);
+		contentSwitchHandler(state, app) {
+			this.commit('toggleContent', app);
 		},
-		contentEditHandler(state, index) {
+		contentEditHandler(state, app, index) {
 			state.status.isEditing = true;
 			Vue.nextTick(function() {
-				app.editor = new Quill('#content-' + index, {
+				app.elements.editor = new Quill('#content-' + index, {
 					theme: 'snow',
 					modules: {
 						toolbar: toolbarOptions
@@ -282,10 +311,22 @@ var store = new Vuex.Store({
 				});
 			});
 		},
-		contentSaveHandler(state, index) {
-			// TODO
+		contentDeleteHandler(state, index) {
+			this.commit('toggleContent', app);
+			console.log(index + ', ' + this.getters.notesCount);
+			if (index >= this.getters.notesCount - 1) {
+				// If the last note is deleted
+				app.elements.dd.setStep(index - 1);
+			} else {
+				app.elements.dd.setStep(index);
+			}
+			state.notes.splice(index, 1);
+			// reinitialize dd?
+			app.elements.dd.reflow();
+		},
+		contentSaveHandler(state, app, index) {
 			let newTitle = app.$el.querySelector('#title-' + index).value;
-			let newContent = app.editor.container.querySelector('.ql-editor').innerHTML;
+			let newContent = app.elements.editor.container.querySelector('.ql-editor').innerHTML;
 			state.notes[index].title = newTitle;
 			state.notes[index].content = newContent;
 			state.status.isEditing = false;
@@ -304,7 +345,7 @@ var store = new Vuex.Store({
 						setTimeout(function() {
 							commit('login', newData.user);
 							commit('loadNotes', newData.notes);
-							commit('display', true);
+							commit('displayNotes', true);
 							resolve();
 						}, 1000);
 					}

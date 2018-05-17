@@ -502,6 +502,9 @@ button.content-switch {
 button.content-edit {
 	background-image: url(../images/edit.svg);
 }
+button.content-delete {
+	background-image: url(../images/trash-2.svg);
+}
 button.content-save {
 	background-image: url(../images/save.svg);
 }
