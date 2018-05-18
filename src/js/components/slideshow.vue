@@ -9,37 +9,38 @@
 				<div class="handle"
 					:style="handleStyle">
 					<div class="slide"
-						:class="slideClass(index)"
-						:style="slideStyle(index)"
-						@click="slideClickHandler(index)"
+						:class="slideClass(note.id)"
+						:style="slideStyle(note.id)"
+						@click="slideClickHandler(note.id)"
 						v-for="(note, index) in notes"
+						:id="'slide-' + note.id"
 						:key="index">
 						<div class="note">
 							<div class="title-container"
-								v-if="!(index == status.current && status.isEditing)">
+								v-if="!(note.id == status.current && status.isEditing)">
 								<span class="title">{{ note.title }}</span>
 								<span class="subtitle">Last Updated: </span>
 								<span class="timestamp" :title="note.datestamp">{{ note.lastUpdated }}</span>
 							</div>
 							<div class="title-editor"
-								v-if="index == status.current && status.isEditing">
-								<textarea :id="'title-' + index"
+								v-if="note.id == status.current && status.isEditing">
+								<textarea :id="'title-' + note.id"
 									v-html="note.title">
 								</textarea>
 							</div>
 							<div class="content"
-								v-if="!(index == status.current && status.isEditing)"
+								v-if="!(note.id == status.current && status.isEditing)"
 								v-html="note.content">
 							</div>
 							<div class="content-editor"
-								v-if="index == status.current && status.isEditing">
-								<div :id="'content-' + index"
+								v-if="note.id == status.current && status.isEditing">
+								<div :id="'content-' + note.id"
 									v-html="note.content">
 								</div>
 							</div>
 						</div>
 						<div class="content-button-container"
-							:style="containerStyle(index)">
+							:style="containerStyle(note.id)">
 							<div class="content-switch-wrapper">
 								<div class="button-wrapper content-switch-wrapper">
 									<button class="button content-switch"
@@ -47,15 +48,18 @@
 									</button>
 								</div>
 								<div class="button-wrapper content-edit-wrapper"
-									v-if="index == status.current && status.appIsShowContent && !status.isEditing">
+									v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
 									<button class="button content-edit"
-										@click="contentEditHandler(index)">
+										@click="contentEditHandler(note.id)">
+									</button>&nbsp;
+									<button class="button content-delete"
+										@click="contentDeleteHandler(note.id)">
 									</button>
 								</div>
 								<div class="button-wrapper content-save-wrapper"
-									v-if="index == status.current && status.appIsShowContent && status.isEditing">
+									v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
 									<button class="button content-save"
-										@click="contentSaveHandler(index)">
+										@click="contentSaveHandler(note.id)">
 									</button>&nbsp;
 									<button class="button content-cancel"
 										@click="contentCancelHandler">
@@ -71,12 +75,14 @@
 </template>
 
 <script>
-	import { mapGetters } from 'vuex';
+	import { mapState, mapGetters, mapMutations } from 'vuex';
 
 	export default {
-		name: 'slideshow-component',
-		props: ['status', 'notes'],
 		computed: {
+			...mapState([
+				'status',
+				'notes'
+			]),
 			...mapGetters([
 				'slideshowClass',
 				'draggerClass',
@@ -88,20 +94,27 @@
 			])
 		},
 		methods: {
-			slideClickHandler: function(index) {
-				this.$store.commit('slideClickHandler', index);
+			...mapMutations([
+				'slideClickHandler',
+				'contentSwitchHandler',
+				'contentEditHandler',
+				'contentCancelHandler'
+			]),
+			contentDeleteHandler: function(noteID) {
+				if (confirm('Are you sure you want to delete this note?')) {
+					this.$store.commit('contentDeleteHandler', noteID);
+				}
 			},
-			contentSwitchHandler: function() {
-				this.$store.commit('contentSwitchHandler');
-			},
-			contentEditHandler: function(index) {
-				this.$store.commit('contentEditHandler', index);
-			},
-			contentSaveHandler: function(index) {
-				this.$store.commit('contentSaveHandler', index);
-			},
-			contentCancelHandler: function() {
-				this.$store.commit('contentCancelHandler');
+			contentSaveHandler: function(noteID) {
+				// TODO validation
+				let newTitle = document.querySelector('#title-' + noteID).value;
+				let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
+				let note = {
+					id: noteID,
+					title: newTitle,
+					content: newContent
+				};
+				this.$store.commit('contentSaveHandler', note);
 			}
 		}
 	};
