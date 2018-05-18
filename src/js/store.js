@@ -452,12 +452,12 @@ export default new Vuex.Store({
 			document.addEventListener('keydown', function(event) {
 				let keyCode = event.keyCode || event.which;
 
-				if (app.status.isContent && !app.status.isEditing) {
+				if (state.status.isContent && !state.status.isEditing) {
 					switch (keyCode) {
 						case 38: // Up arrow key
 							// Toggle content only if content is scrolled to topmost
 							if (currentSlide.scrollTop === 0) {
-								app.$store.commit('toggleContent');
+								commit('toggleContent');
 							}
 							break;
 					}
@@ -466,8 +466,8 @@ export default new Vuex.Store({
 					switch (keyCode) {
 						case 40: // Down arrow key
 							// Toggle content only if it's fullscreen
-							if (app.status.isFullscreen) {
-								app.$store.commit('toggleContent');
+							if (state.status.isFullscreen) {
+								commit('toggleContent');
 							}
 							break;
 						case 37: // Left arrow key
