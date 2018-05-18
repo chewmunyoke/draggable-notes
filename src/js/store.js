@@ -1,3 +1,10 @@
+import Vue from 'vue';
+import Vuex from 'vuex';
+import moment from 'moment';
+import Quill from 'quill';
+import Dragdealer from './dragdealer.js';
+import createLogger from './logger.js';
+
 let docElem = window.document.documentelements,
 	transEndEventNames = {
 		'WebkitTransition': 'webkitTransitionEnd',
@@ -19,14 +26,19 @@ let toolbarOptions = [
 	['clean']
 ];
 
-var store = new Vuex.Store({
-	strict: true, //process.env.NODE_ENV !== 'production',
+//let debug = process.env.NODE_ENV !== 'production';
+let debug = true;
+
+Vue.use(Vuex);
+export default new Vuex.Store({
+	strict: debug,
+	plugins: debug ? [createLogger()] : [],
 	state: {
 		appTitle: 'Draggable Notes',
 		appMessage: 'This mobile version does not have the slideshow switch',
 		// App initial state
 		status: {
-			current: 'x',
+			current: 0,
 			isDisplayed: false,
 			isFullscreen: true,
 			isContent: false,
@@ -54,7 +66,7 @@ var store = new Vuex.Store({
 			slideContentMargin: 20
 		},
 		user: {
-			id: 0,
+			user_id: 0,
 			name: "Test User",
 			username: "test",
 			password: "test"
@@ -152,7 +164,6 @@ var store = new Vuex.Store({
 		slideStyle: function(state, getters) {
 			return function(noteID) {
 				let left = null;
-				console.log(!state.status.slideIsShow);
 				if (!state.status.slideIsShow) {
 					if (getters.slideClass(noteID).previous) {
 						left = getters.slideLeftValue;
@@ -180,7 +191,7 @@ var store = new Vuex.Store({
 	mutations: {
 		login(state, user) {
 			for (let key in user) {
-				Vue.set(state.user, key, user[key]);
+				state.user[key] = user[key];
 			}
 		},
 		loadNotes(state, notes) {

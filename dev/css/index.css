@@ -45,11 +45,12 @@
 }
 
 body {
-	background: #2c3135;
+	background: linear-gradient(to top left, #43cea2, #185a9d);
 	color: #545b61;
 	font-family: 'Lato', Arial, sans-serif;
 	font-size: 1em;
 	font-weight: 400;
+	line-height: 1.5;
 }
 a {
 	color: #9da8ab;
@@ -198,7 +199,7 @@ body,
 	left: 15%;
 	z-index: 500;
 	width: 70%;
-	color: #c5d3d6;
+	color: #e7edee;
 	pointer-events: none;
 	-webkit-transition: opacity 0.3s;
 	transition: opacity 0.3s;
@@ -501,6 +502,9 @@ button.content-switch {
 }
 button.content-edit {
 	background-image: url(../images/edit.svg);
+}
+button.content-delete {
+	background-image: url(../images/trash-2.svg);
 }
 button.content-save {
 	background-image: url(../images/save.svg);

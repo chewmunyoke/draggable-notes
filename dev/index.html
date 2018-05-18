@@ -16,7 +16,7 @@
 	</head>
 	<body>
 		<section id="app" class="main" v-cloak>
-			<header-component :status="status"></header-component>
+			<header-component></header-component>
 			<transition name="display">
 				<div class="slideshow"
 					:class="slideshowClass"
@@ -27,52 +27,56 @@
 						<div class="handle"
 							:style="handleStyle">
 							<div class="slide"
-								:class="slideClass(index)"
-								:style="slideStyle(index)"
-								@click="slideClickHandler(index)"
+								:class="slideClass(note.id)"
+								:style="slideStyle(note.id)"
+								@click="slideClickHandler(note.id)"
 								v-for="(note, index) in notes"
+								:id="'slide-' + note.id"
 								:key="index">
 								<div class="note">
 									<div class="title-container"
-										v-if="!(index == status.current && status.isEditing)">
+										v-if="!(note.id == status.current && status.isEditing)">
 										<span class="title">{{ note.title }}</span>
 										<span class="subtitle">Last Updated: </span>
 										<span class="timestamp" :title="note.datestamp">{{ note.lastUpdated }}</span>
 									</div>
 									<div class="title-editor"
-										v-if="index == status.current && status.isEditing">
-										<textarea :id="'title-' + index"
+										v-if="note.id == status.current && status.isEditing">
+										<textarea :id="'title-' + note.id"
 											v-html="note.title">
 										</textarea>
 									</div>
 									<div class="content"
-										v-if="!(index == status.current && status.isEditing)"
+										v-if="!(note.id == status.current && status.isEditing)"
 										v-html="note.content">
 									</div>
 									<div class="content-editor"
-										v-if="index == status.current && status.isEditing">
-										<div :id="'content-' + index"
+										v-if="note.id == status.current && status.isEditing">
+										<div :id="'content-' + note.id"
 											v-html="note.content">
 										</div>
 									</div>
 								</div>
 								<div class="content-button-container"
-									:style="containerStyle(index)">
+									:style="containerStyle(note.id)">
 									<div class="button-wrapper content-switch-wrapper">
 										<button class="button content-switch"
 											@click="contentSwitchHandler">
 										</button>
 									</div>
 									<div class="button-wrapper content-edit-wrapper"
-										v-if="index == status.current && status.appIsShowContent && !status.isEditing">
+										v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
 										<button class="button content-edit"
-											@click="contentEditHandler(index)">
+											@click="contentEditHandler(note.id)">
+										</button>
+										<button class="button content-delete"
+											@click="contentDeleteHandler(note.id)">
 										</button>
 									</div>
 									<div class="button-wrapper content-save-wrapper"
-										v-if="index == status.current && status.appIsShowContent && status.isEditing">
+										v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
 										<button class="button content-save"
-											@click="contentSaveHandler(index)">
+											@click="contentSaveHandler(note.id)">
 										</button>&nbsp;
 										<button class="button content-cancel"
 											@click="contentCancelHandler">
@@ -92,7 +96,7 @@
 				<span class="message">{{ appMessage }}</span>
 				<button class="dragger-switch"
 					:class="draggerButtonClass"
-					v-on:click="draggerClickHandler">
+					@click="draggerClickHandler">
 					Switch view
 				</button>
 			</header>
