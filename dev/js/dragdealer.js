@@ -666,6 +666,8 @@ Dragdealer.prototype = {
     return range ? (offset - padding) / range : 0;
   },
   getOffsetsByRatios: function(group) {
+	//console.log(this.bounds);
+	//console.log('x ratio: ' + group[0]);
     return [
       this.getOffsetByRatio(group[0], this.bounds.availWidth, this.bounds.left),
       this.getOffsetByRatio(group[1], this.bounds.availHeight, this.bounds.top)

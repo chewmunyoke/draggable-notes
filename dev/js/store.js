@@ -1,3 +1,14 @@
+let docElem = window.document.documentelements,
+	transEndEventNames = {
+		'WebkitTransition': 'webkitTransitionEnd',
+		'MozTransition': 'transitionend',
+		'OTransition': 'oTransitionEnd',
+		'msTransition': 'MSTransitionEnd',
+		'transition': 'transitionend'
+	},
+	transEndEventName = transEndEventNames[Modernizr.prefixed('transition')],
+	support = {transitions : Modernizr.csstransitions};
+
 let toolbarOptions = [
 	//[{ 'font': [] }, { 'size': [] }],
 	['bold', 'italic', 'underline', 'strike'],
@@ -15,7 +26,7 @@ var store = new Vuex.Store({
 		appMessage: 'This mobile version does not have the slideshow switch',
 		// App initial state
 		status: {
-			current: 0,
+			current: 'x',
 			isDisplayed: false,
 			isFullscreen: true,
 			isContent: false,
@@ -28,6 +39,7 @@ var store = new Vuex.Store({
 			draggerButtonIsToggled: false,
 			draggerIsToggled: false,
 			draggerIsTransforming: false,
+			draggerWidth: 0,
 			slideIsShow: false,
 			containerIsFixed: false,
 			preserve3dSlides: false, // fixes rendering problem in firefox
@@ -42,7 +54,7 @@ var store = new Vuex.Store({
 			slideContentMargin: 20
 		},
 		user: {
-			user_id: 0,
+			id: 0,
 			name: "Test User",
 			username: "test",
 			password: "test"
@@ -51,8 +63,14 @@ var store = new Vuex.Store({
 	},
 	getters: {
 		notesCount: function(state) {
-			// TODO if zero
 			return state.notes.length;
+		},
+		noteIndex: function(state) {
+			return function(noteID) {
+				return state.notes.findIndex(function(note) {
+					return note.id == noteID;
+				});
+			}
 		},
 		zAxis: function(state) {
 			return state.status.isFullscreen ?
@@ -67,6 +85,9 @@ var store = new Vuex.Store({
 		},
 		slideContentWidth: function(state, getters) {
 			return 'calc(' + (state.options.draggerWidthPct / getters.notesCount) + '% - ' + state.options.slideContentMargin + 'px';
+		},
+		slideLeftValue: function(state) {
+			return (state.draggerWidth * 0.14) + 'px';
 		},
 		draggerToggledWidth: function(state) {
 			return state.options.slideshowRatio * state.options.draggerWidthPct + '%';
@@ -116,30 +137,42 @@ var store = new Vuex.Store({
 				'width': getters.handleWidth
 			};
 		},
-		slideClass: function(state) {
-			return function(index) {
+		slideClass: function(state, getters) {
+			return function(noteID) {
+				let index = getters.noteIndex(noteID);
+				let currentIndex = getters.noteIndex(state.status.current);
 				return {
-					'current': index == state.status.current,
-					'previous': index == state.status.current - 1,
-					'next': index == state.status.current + 1,
-					'show': index == state.status.current && state.status.slideIsShow
+					'current': index == currentIndex,
+					'previous': index == currentIndex - 1,
+					'next': index == currentIndex + 1,
+					'show': index == currentIndex && state.status.slideIsShow
 				};
 			};
 		},
 		slideStyle: function(state, getters) {
-			return function(index) {
+			return function(noteID) {
+				let left = null;
+				console.log(!state.status.slideIsShow);
+				if (!state.status.slideIsShow) {
+					if (getters.slideClass(noteID).previous) {
+						left = getters.slideLeftValue;
+					} else if (getters.slideClass(noteID).next) {
+						left = '-' + getters.slideLeftValue;
+					}
+				}
 				return {
-					'width': index == state.status.current && state.status.slideIsShow ? getters.slideContentWidth : getters.slideIntialWidth,
-					'margin': index == state.status.current && state.status.slideIsShow ? null : getters.slideInitialMargin,
+					'left': left,
+					'width': noteID == state.status.current && state.status.slideIsShow ? getters.slideContentWidth : getters.slideIntialWidth,
+					'margin': noteID == state.status.current && state.status.slideIsShow ? null : getters.slideInitialMargin,
 					'transform-style': state.status.preserve3dSlides ? 'preserve-3d' : null
 				};
 			};
 		},
 		containerStyle: function(state, getters) {
-			return function(index) {
+			return function(noteID) {
 				return {
-					'position': index == state.status.current && state.status.containerIsFixed ? 'fixed' : null,
-					'width': index == state.status.current && state.status.containerIsFixed ? getters.slideContentWidth : null
+					'position': noteID == state.status.current && state.status.containerIsFixed ? 'fixed' : null,
+					'width': noteID == state.status.current && state.status.containerIsFixed ? getters.slideContentWidth : null
 				};
 			};
 		}
@@ -156,12 +189,15 @@ var store = new Vuex.Store({
 				note.lastUpdated = moment(note.timestamp).fromNow();
 				state.notes.push(note);
 			});
+			if (notes.length > 0) {
+				this.commit('setCurrentNote', notes[0].id);
+			}
 		},
 		displayNotes(state, flag) {
 			state.status.isDisplayed = flag;
 		},
-		setCurrentNote(state, index) {
-			state.status.current = index;
+		setCurrentNote(state, noteID) {
+			state.status.current = noteID;
 		},
 		/**
 		 * Function to toggle between fullscreen and minimized slideshow
@@ -234,7 +270,7 @@ var store = new Vuex.Store({
 			// TODO callback
 			// state.options.onToggleContent();
 
-			let slide = window.elements.slides[state.status.current];
+			let slide = document.querySelector('#slide-' + state.status.current);
 			slide.scrollTop = 0;
 
 			if (state.status.isContent) {
@@ -278,17 +314,21 @@ var store = new Vuex.Store({
 			state.status.isContent = !state.status.isContent;
 			state.status.isAnimating = false;
 
-			// TODO Callback
+			// TODO callback
 			// state.options.onToggleContentComplete();
+		},
+		updateDraggerWidth(state) {
+			state.status.draggerWidth = window.elements.dragger.offsetWidth;
 		},
 		draggerClickHandler(state) {
 			this.commit('toggle');
 		},
-		slideClickHandler(state, index) {
+		slideClickHandler(state, noteID) {
 			if (!state.status.isFullscreen && !state.status.isAnimating && !window.elements.dd.activity) {
-				if (index === state.status.current) {
+				if (noteID === state.status.current) {
 					this.commit('toggle');
 				} else {
+					let index = this.getters.noteIndex(noteID);
 					window.elements.dd.setStep(index + 1);
 				}
 			}
@@ -296,10 +336,10 @@ var store = new Vuex.Store({
 		contentSwitchHandler(state) {
 			this.commit('toggleContent');
 		},
-		contentEditHandler(state, index) {
+		contentEditHandler(state, noteID) {
 			state.status.isEditing = true;
 			Vue.nextTick(function() {
-				window.elements.editor = new Quill('#content-' + index, {
+				window.elements.editor = new Quill('#content-' + noteID, {
 					theme: 'snow',
 					modules: {
 						toolbar: toolbarOptions
@@ -307,24 +347,34 @@ var store = new Vuex.Store({
 				});
 			});
 		},
-		contentDeleteHandler(state, index) {
+		contentDeleteHandler(state, noteID) {
 			this.commit('toggleContent');
-			console.log(index + ', ' + this.getters.notesCount);
-			if (index >= this.getters.notesCount - 1) {
+
+			let index = this.getters.noteIndex(noteID);
+			let stepIndex = index;
+			if (index <= 0) {
+				// If the first note is deleted
+				stepIndex = 1;
+			} else if (index >= this.getters.notesCount - 1) {
 				// If the last note is deleted
-				window.elements.dd.setStep(index - 1);
+				stepIndex = index;
 			} else {
-				window.elements.dd.setStep(index);
+				stepIndex = index + 1;
 			}
 			state.notes.splice(index, 1);
-			// reinitialize dd?
-			window.elements.dd.reflow();
+			window.elements.slides.splice(index, 1);
+
+			if (this.getters.notesCount == 0) {
+				// TODO
+				console.log('All notes deleted!');
+			} else {
+				this.dispatch('initElements', stepIndex);
+			}
 		},
-		contentSaveHandler(state, index) {
-			let newTitle = document.querySelector('#title-' + index).value;
-			let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
-			state.notes[index].title = newTitle;
-			state.notes[index].content = newContent;
+		contentSaveHandler(state, newNote) {
+			let index = this.getters.noteIndex(noteID);
+			state.notes[index].title = newNote.title;
+			state.notes[index].content = newNote.content;
 			state.status.isEditing = false;
 		},
 		contentCancelHandler(state) {
@@ -347,8 +397,76 @@ var store = new Vuex.Store({
 					}
 				};
 				//xhr.open('GET', 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad', true);
-				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/2', true);
+				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/4', true);
 				xhr.send();
+			});
+		},
+		initElements({commit, state}, stepIndex) {
+			let self = this;
+			Vue.nextTick().then(function() {
+				window.elements.slides = [].slice.call(window.elements.handle.children);
+				window.elements.dd = new Dragdealer(window.elements.dragger, {
+					steps: state.notes.length,
+					speed: 0.3,
+					loose: true,
+					callback: function(x, y) {
+						let index = this.getStep()[0] - 1;
+						if (isNaN(index)) index = 0;
+						commit('setCurrentNote', state.notes[index].id);
+					}
+				});
+				window.elements.dd.setStep(stepIndex);
+			});
+		},
+		initEvents({commit, state}) {
+			let self = this;
+
+			window.addEventListener('resize', function(event) {
+				self.commit('updateDraggerWidth');
+			});
+
+			document.addEventListener('mousewheel', function(event) {
+				if (!state.status.isContent) {
+					let index = self.getters.noteIndex(state.status.current);
+					if (event.deltaY < 0) {
+						// Scroll up = previous slide
+						window.elements.dd.setStep(index);
+					} else {
+						// Scroll down = next slide
+						window.elements.dd.setStep(index + 2);
+					}
+				}
+			});
+
+			document.addEventListener('keydown', function(event) {
+				let keyCode = event.keyCode || event.which;
+
+				if (app.status.isContent && !app.status.isEditing) {
+					switch (keyCode) {
+						case 38: // Up arrow key
+							// Toggle content only if content is scrolled to topmost
+							if (currentSlide.scrollTop === 0) {
+								app.$store.commit('toggleContent');
+							}
+							break;
+					}
+				} else {
+					let index = self.getters.noteIndex(state.status.current);
+					switch (keyCode) {
+						case 40: // Down arrow key
+							// Toggle content only if it's fullscreen
+							if (app.status.isFullscreen) {
+								app.$store.commit('toggleContent');
+							}
+							break;
+						case 37: // Left arrow key
+							window.elements.dd.setStep(index);
+							break;
+						case 39: // Right arrow key
+							window.elements.dd.setStep(index + 2);
+							break;
+					}
+				}
 			});
 		}
 	}
