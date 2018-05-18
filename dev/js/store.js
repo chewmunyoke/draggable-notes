@@ -422,7 +422,7 @@ var store = new Vuex.Store({
 			let self = this;
 
 			window.addEventListener('resize', function(event) {
-				self.commit('updateDraggerWidth');
+				commit('updateDraggerWidth');
 			});
 
 			document.addEventListener('mousewheel', function(event) {
@@ -441,12 +441,12 @@ var store = new Vuex.Store({
 			document.addEventListener('keydown', function(event) {
 				let keyCode = event.keyCode || event.which;
 
-				if (app.status.isContent && !app.status.isEditing) {
+				if (state.status.isContent && !state.status.isEditing) {
 					switch (keyCode) {
 						case 38: // Up arrow key
 							// Toggle content only if content is scrolled to topmost
 							if (currentSlide.scrollTop === 0) {
-								app.$store.commit('toggleContent');
+								commit('toggleContent');
 							}
 							break;
 					}
@@ -455,8 +455,8 @@ var store = new Vuex.Store({
 					switch (keyCode) {
 						case 40: // Down arrow key
 							// Toggle content only if it's fullscreen
-							if (app.status.isFullscreen) {
-								app.$store.commit('toggleContent');
+							if (state.status.isFullscreen) {
+								commit('toggleContent');
 							}
 							break;
 						case 37: // Left arrow key
