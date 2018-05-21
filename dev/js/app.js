@@ -1,6 +1,6 @@
 let mapState = Vuex.mapState;
 let mapGetters = Vuex.mapGetters;
-let mapMutations = Vuex.mapMutations;
+let mapActions = Vuex.mapActions;
 
 let headerComponent = {
 	template: '#header-component',
@@ -15,7 +15,7 @@ let headerComponent = {
 		])
 	},
 	methods: {
-		...mapMutations([
+		...mapActions([
 			'draggerClickHandler'
 		])
 	}
@@ -45,7 +45,7 @@ let app = new Vue({
 		])
 	},
 	methods: {
-		...mapMutations([
+		...mapActions([
 			'slideClickHandler',
 			'contentSwitchHandler',
 			'contentEditHandler',
@@ -53,7 +53,7 @@ let app = new Vue({
 		]),
 		contentDeleteHandler: function(noteID) {
 			if (confirm('Are you sure you want to delete this note?')) {
-				this.$store.commit('contentDeleteHandler', noteID);
+				this.$store.dispatch('contentDeleteHandler', noteID);
 			}
 		},
 		contentSaveHandler: function(noteID) {
@@ -65,7 +65,7 @@ let app = new Vue({
 				title: newTitle,
 				content: newContent
 			};
-			this.$store.commit('contentSaveHandler', note);
+			this.$store.dispatch('contentSaveHandler', note);
 		}
 	},
 	mounted: function() {

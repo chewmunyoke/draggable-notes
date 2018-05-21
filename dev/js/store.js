@@ -19,8 +19,12 @@ let toolbarOptions = [
 	['clean']
 ];
 
+//let debug = process.env.NODE_ENV !== 'production';
+let debug = true;
+
 var store = new Vuex.Store({
-	strict: true, //process.env.NODE_ENV !== 'production',
+	strict: debug,
+	plugins: debug ? [createLogger()] : [],
 	state: {
 		appTitle: 'Draggable Notes',
 		appMessage: 'This mobile version does not have the slideshow switch',
@@ -151,8 +155,8 @@ var store = new Vuex.Store({
 		},
 		slideStyle: function(state, getters) {
 			return function(noteID) {
+				/*
 				let left = null;
-				console.log(!state.status.slideIsShow);
 				if (!state.status.slideIsShow) {
 					if (getters.slideClass(noteID).previous) {
 						left = getters.slideLeftValue;
@@ -160,8 +164,9 @@ var store = new Vuex.Store({
 						left = '-' + getters.slideLeftValue;
 					}
 				}
+				*/
 				return {
-					'left': left,
+					//'left': left,
 					'width': noteID == state.status.current && state.status.slideIsShow ? getters.slideContentWidth : getters.slideIntialWidth,
 					'margin': noteID == state.status.current && state.status.slideIsShow ? null : getters.slideInitialMargin,
 					'transform-style': state.status.preserve3dSlides ? 'preserve-3d' : null
@@ -178,210 +183,42 @@ var store = new Vuex.Store({
 		}
 	},
 	mutations: {
-		login(state, user) {
+		setUser(state, user) {
 			for (let key in user) {
-				Vue.set(state.user, key, user[key]);
+				//Vue.set(state.user, key, user[key]);
+				state.user[key] = user[key];
 			}
-		},
-		loadNotes(state, notes) {
-			notes.forEach(function(note) {
-				note.datestamp = moment(note.timestamp).format('LLLL');
-				note.lastUpdated = moment(note.timestamp).fromNow();
-				state.notes.push(note);
-			});
-			if (notes.length > 0) {
-				this.commit('setCurrentNote', notes[0].id);
-			}
-		},
-		displayNotes(state, flag) {
-			state.status.isDisplayed = flag;
 		},
 		setCurrentNote(state, noteID) {
 			state.status.current = noteID;
 		},
-		/**
-		 * Function to toggle between fullscreen and minimized slideshow
-		 */
-		toggle(state) {
-			let self = this;
-
-			if (state.status.isAnimating) return false;
-			state.status.isAnimating = true;
-
-			state.status.preserve3dSlides = true;
-
-			// TODO callback
-			//state.options.onToggle();
-
-			// Add switch classes
-			if (state.status.isFullscreen) {
-				state.status.draggerButtonIsToggled = true;
-				state.status.appIsSwitchMin = true;
-			} else {
-				state.status.draggerButtonIsToggled = false;
-				state.status.appIsSwitchMax = true;
-			}
-			state.status.draggerIsTransforming = true;
-
-			let onEndTransitionFn = function(event) {
-				if (support.transitions) {
-					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.dragger) return;
-					this.removeEventListener(transEndEventName, onEndTransitionFn);
-				}
-				self.commit('toggleEnd');
-			};
-
-			if (support.transitions) {
-				window.elements.dragger.addEventListener(transEndEventName, onEndTransitionFn);
-			} else {
-				onEndTransitionFn();
+		addNote(state, note) {
+			state.notes.push(note);
+		},
+		saveNote(state, note) {
+			let index = this.getters.noteIndex(note.id);
+			for (let key in note) {
+				state.notes[index][key] = note[key];
 			}
 		},
-		toggleEnd(state) {
-			// Remove switch classes
-			if (state.status.isFullscreen) {
-				state.status.appIsSwitchMin = false;
-				state.status.draggerIsToggled = true;
-			} else {
-				state.status.appIsSwitchMax = false;
-				state.status.draggerIsToggled = false;
-				state.status.preserve3dSlides = false;
-			}
-			state.status.draggerIsTransforming = false;
-
-			state.status.isFullscreen = !state.status.isFullscreen;
-			state.status.isAnimating = false;
-
-			// To be executed after the DOM is updated with the computed class changes
-			Vue.nextTick(function() {
-				// Reinstatiate the dragger with the "reflow" method
-				window.elements.dd.reflow();
-			});
+		deleteNote(state, noteID) {
+			let index = this.getters.noteIndex(noteID);
+			state.notes.splice(index, 1);
+			window.elements.slides.splice(index, 1);
 		},
-		/**
-		 * Function to show/hide slide content
-		 */
-		toggleContent(state) {
-			let self = this;
-
-			if (state.status.isAnimating) return false;
-			state.status.isAnimating = true;
-
-			// TODO callback
-			// state.options.onToggleContent();
-
-			let slide = document.querySelector('#slide-' + state.status.current);
-			slide.scrollTop = 0;
-
-			if (state.status.isContent) {
-				// Enable the dragdealer
-				window.elements.dd.enable();
-				window.elements.dd.bindEventListeners();
-				state.status.appIsShowContent = false;
-				state.status.slideIsShow = false;
-				state.status.containerIsFixed = false;
-			} else {
-				// Disable the dragdealer
-				window.elements.dd.disable();
-				window.elements.dd.unbindEventListeners();
-				state.status.appIsSwitchShow = true;
-				state.status.appIsShowContent = true;
-				state.status.slideIsShow = true;
+		toggleStatus(state, params) {
+			for (let key in params) {
+				state.status[key] = params[key];
 			}
-
-			let onEndTransitionFn = function(event) {
-				if (support.transitions) {
-					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.slideshow) return;
-					this.removeEventListener(transEndEventName, onEndTransitionFn);
-				}
-				self.commit('toggleContentEnd');
-			};
-
-			if (support.transitions) {
-				window.elements.slideshow.addEventListener(transEndEventName, onEndTransitionFn);
-			} else {
-				onEndTransitionFn();
-			}
-		},
-		toggleContentEnd(state) {
-			// Set properties after transition ended
-			if (state.status.isContent) {
-				state.status.appIsSwitchShow = false;
-			} else {
-				state.status.containerIsFixed = true;
-			}
-
-			state.status.isContent = !state.status.isContent;
-			state.status.isAnimating = false;
-
-			// TODO callback
-			// state.options.onToggleContentComplete();
 		},
 		updateDraggerWidth(state) {
 			state.status.draggerWidth = window.elements.dragger.offsetWidth;
-		},
-		draggerClickHandler(state) {
-			this.commit('toggle');
-		},
-		slideClickHandler(state, noteID) {
-			if (!state.status.isFullscreen && !state.status.isAnimating && !window.elements.dd.activity) {
-				if (noteID === state.status.current) {
-					this.commit('toggle');
-				} else {
-					let index = this.getters.noteIndex(noteID);
-					window.elements.dd.setStep(index + 1);
-				}
-			}
-		},
-		contentSwitchHandler(state) {
-			this.commit('toggleContent');
-		},
-		contentEditHandler(state, noteID) {
-			state.status.isEditing = true;
-			Vue.nextTick(function() {
-				window.elements.editor = new Quill('#content-' + noteID, {
-					theme: 'snow',
-					modules: {
-						toolbar: toolbarOptions
-					}
-				});
-			});
-		},
-		contentDeleteHandler(state, noteID) {
-			this.commit('toggleContent');
-
-			let index = this.getters.noteIndex(noteID);
-			let stepIndex = index;
-			if (index <= 0) {
-				// If the first note is deleted
-				stepIndex = 1;
-			} else if (index >= this.getters.notesCount - 1) {
-				// If the last note is deleted
-				stepIndex = index;
-			} else {
-				stepIndex = index + 1;
-			}
-			state.notes.splice(index, 1);
-			window.elements.slides.splice(index, 1);
-
-			if (this.getters.notesCount == 0) {
-				// TODO
-				alert('All notes deleted!');
-			} else {
-				this.dispatch('initElements', stepIndex);
-			}
-		},
-		contentSaveHandler(state, newNote) {
-			let index = this.getters.noteIndex(newNote.id);
-			state.notes[index].title = newNote.title;
-			state.notes[index].content = newNote.content;
-			state.status.isEditing = false;
-		},
-		contentCancelHandler(state) {
-			state.status.isEditing = false;
 		}
 	},
 	actions: {
+		login({commit, state}, credentials) {
+
+		},
 		fetchData({commit, state}, credentials) {
 			return new Promise(function(resolve, reject) {
 				let xhr = new XMLHttpRequest();
@@ -389,15 +226,22 @@ var store = new Vuex.Store({
 					if (this.readyState == 4 && this.status == 200) {
 						let newData = JSON.parse(this.responseText);
 						setTimeout(function() {
-							commit('login', newData.user);
-							commit('loadNotes', newData.notes);
-							commit('displayNotes', true);
+							commit('setUser', newData.user);
+							if (newData.notes.length > 0) {
+								newData.notes.forEach(function(note) {
+									commit('addNote', setNote(note));
+								});
+								commit('setCurrentNote', newData.notes[0].id);
+							} else {
+								// TODO no notes
+							}
+							commit('toggleStatus', {'isDisplayed': true});
 							resolve();
 						}, 1000);
 					}
 				};
 				//xhr.open('GET', 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad', true);
-				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/4', true);
+				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/6', true);
 				xhr.send();
 			});
 		},
@@ -422,7 +266,7 @@ var store = new Vuex.Store({
 			let self = this;
 
 			window.addEventListener('resize', function(event) {
-				self.commit('updateDraggerWidth');
+				commit('updateDraggerWidth');
 			});
 
 			document.addEventListener('mousewheel', function(event) {
@@ -441,12 +285,12 @@ var store = new Vuex.Store({
 			document.addEventListener('keydown', function(event) {
 				let keyCode = event.keyCode || event.which;
 
-				if (app.status.isContent && !app.status.isEditing) {
+				if (state.status.isContent && !state.status.isEditing) {
 					switch (keyCode) {
 						case 38: // Up arrow key
 							// Toggle content only if content is scrolled to topmost
 							if (currentSlide.scrollTop === 0) {
-								app.$store.commit('toggleContent');
+								this.dispatch('toggleContent');
 							}
 							break;
 					}
@@ -455,8 +299,8 @@ var store = new Vuex.Store({
 					switch (keyCode) {
 						case 40: // Down arrow key
 							// Toggle content only if it's fullscreen
-							if (app.status.isFullscreen) {
-								app.$store.commit('toggleContent');
+							if (state.status.isFullscreen) {
+								this.dispatch('toggleContent');
 							}
 							break;
 						case 37: // Left arrow key
@@ -468,6 +312,204 @@ var store = new Vuex.Store({
 					}
 				}
 			});
+		},
+		draggerClickHandler({commit, state}) {
+			this.dispatch('toggle');
+		},
+		slideClickHandler({commit, state}, noteID) {
+			if (!state.status.isFullscreen && !state.status.isAnimating && !window.elements.dd.activity) {
+				if (noteID === state.status.current) {
+					this.dispatch('toggle');
+				} else {
+					let index = this.getters.noteIndex(noteID);
+					window.elements.dd.setStep(index + 1);
+				}
+			}
+		},
+		contentSwitchHandler({commit, state}) {
+			this.dispatch('toggleContent');
+		},
+		contentEditHandler({commit, state}, noteID) {
+			commit('toggleStatus', {'isEditing': true});
+			Vue.nextTick(function() {
+				window.elements.editor = new Quill('#content-' + noteID, {
+					theme: 'snow',
+					modules: {
+						toolbar: toolbarOptions
+					}
+				});
+			});
+		},
+		contentDeleteHandler({commit, state}, noteID) {
+			this.dispatch('toggleContent');
+
+			let index = this.getters.noteIndex(noteID);
+			let stepIndex = index;
+			if (index <= 0) {
+				// If the first note is deleted
+				stepIndex = 1;
+			} else if (index >= this.getters.notesCount - 1) {
+				// If the last note is deleted
+				stepIndex = index;
+			} else {
+				stepIndex = index + 1;
+			}
+
+			commit('deleteNote', noteID);
+
+			if (this.getters.notesCount == 0) {
+				// TODO
+				alert('All notes deleted!');
+			} else {
+				this.dispatch('initElements', stepIndex);
+			}
+		},
+		contentSaveHandler({commit, state}, note) {
+			// If there are changes, save
+			// Else, cancel
+			let index = this.getters.noteIndex(note.id);
+			console.log(note.title == state.notes[index].title)
+			console.log(note.content == state.notes[index].content)
+			console.log(note.content)
+			console.log(state.notes[index].content)
+			if (note.title != state.notes[index].title
+				|| note.content != state.notes[index].content) {
+					note.timestamp = moment().valueOf();
+					commit('saveNote', setNote(note));
+				}
+			commit('toggleStatus', {'isEditing': false});
+		},
+		contentCancelHandler({commit, state}) {
+			commit('toggleStatus', {'isEditing': false});
+		},
+		/**
+		 * Function to toggle between fullscreen and minimized slideshow
+		 */
+		toggle({commit, state}) {
+			if (state.status.isAnimating) return false;
+
+			// Callback
+			//state.options.onToggle();
+
+			let status = {
+				'isAnimating': true,
+				'preserve3dSlides': true,
+				'draggerIsTransforming': true
+			};
+			// Add switch classes
+			if (state.status.isFullscreen) {
+				status['draggerButtonIsToggled'] = true;
+				status['appIsSwitchMin'] = true;
+			} else {
+				status['draggerButtonIsToggled'] = false;
+				status['appIsSwitchMax'] = true;
+			}
+			commit('toggleStatus', status);
+
+			let self = this;
+			let onEndTransitionFn = function(event) {
+				if (support.transitions) {
+					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.dragger) return;
+					this.removeEventListener(transEndEventName, onEndTransitionFn);
+				}
+				self.dispatch('toggleEnd');
+			};
+
+			if (support.transitions) {
+				window.elements.dragger.addEventListener(transEndEventName, onEndTransitionFn);
+			} else {
+				onEndTransitionFn();
+			}
+		},
+		toggleEnd({commit, state}) {
+			let status = {
+				'isAnimating': false,
+				'isFullscreen': !state.status.isFullscreen,
+				'draggerIsTransforming': false
+			};
+			// Remove switch classes
+			if (state.status.isFullscreen) {
+				status['appIsSwitchMin'] = false;
+				status['draggerIsToggled'] = true;
+			} else {
+				status['appIsSwitchMax'] = false;
+				status['draggerIsToggled'] = false;
+				status['preserve3dSlides'] = false;
+			}
+			commit('toggleStatus', status);
+
+			// To be executed after the DOM is updated with the computed class changes
+			Vue.nextTick().then(function() {
+				// Reinstatiate the dragger with the "reflow" method
+				window.elements.dd.reflow();
+			});
+		},
+		/**
+		 * Function to show/hide slide content
+		 */
+		toggleContent({commit, state}) {
+			if (state.status.isAnimating) return false;
+
+			// Callback
+			// state.options.onToggleContent();
+
+			let slide = document.querySelector('#slide-' + state.status.current);
+			slide.scrollTop = 0;
+
+			let status = {
+				'isAnimating': true
+			};
+			if (state.status.isContent) {
+				window.elements.dd.enable();
+				window.elements.dd.bindEventListeners();
+				status['appIsShowContent'] = false;
+				status['slideIsShow'] = false;
+				status['containerIsFixed'] = false;
+			} else {
+				window.elements.dd.disable();
+				window.elements.dd.unbindEventListeners();
+				status['appIsSwitchShow'] = true;
+				status['appIsShowContent'] = true;
+				status['slideIsShow'] = true;
+			}
+			commit('toggleStatus', status);
+
+			let self = this;
+			let onEndTransitionFn = function(event) {
+				if (support.transitions) {
+					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.slideshow) return;
+					this.removeEventListener(transEndEventName, onEndTransitionFn);
+				}
+				self.dispatch('toggleContentEnd');
+			};
+
+			if (support.transitions) {
+				window.elements.slideshow.addEventListener(transEndEventName, onEndTransitionFn);
+			} else {
+				onEndTransitionFn();
+			}
+		},
+		toggleContentEnd({commit, state}) {
+			let status = {
+				'isAnimating': false,
+				'isContent': !state.status.isContent
+			};
+			// Set properties after transition ended
+			if (state.status.isContent) {
+				status['appIsSwitchShow'] = false;
+			} else {
+				status['containerIsFixed'] = true;
+			}
+			commit('toggleStatus', status);
+
+			// Callback
+			// state.options.onToggleContentComplete();
 		}
 	}
 });
+
+function setNote(note) {
+	note.datestamp = moment(note.timestamp).format('LLLL');
+	note.lastUpdated = moment(note.timestamp).fromNow();
+	return note;
+}
