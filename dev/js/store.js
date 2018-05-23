@@ -26,12 +26,12 @@ var store = new Vuex.Store({
 	strict: debug,
 	plugins: debug ? [createLogger()] : [],
 	state: {
-		appTitle: 'Draggable Notes',
-		appMessage: 'This mobile version does not have the slideshow switch',
 		// App initial state
 		status: {
 			current: 'x',
+			isLoading: true,
 			isDisplayed: false,
+			isEmpty: false,
 			isFullscreen: true,
 			isContent: false,
 			isEditing: false,
@@ -46,7 +46,7 @@ var store = new Vuex.Store({
 			draggerWidth: 0,
 			slideIsShow: false,
 			containerIsFixed: false,
-			preserve3dSlides: false, // fixes rendering problem in firefox
+			preserve3dSlides: false // fixes rendering problem in firefox
 		},
 		// App default options
 		options: {
@@ -56,6 +56,11 @@ var store = new Vuex.Store({
 			draggerHeightPct: 60,
 			slideWidthPct: 80,
 			slideContentMargin: 20
+		},
+		text: {
+			appTitle: 'Draggable Notes',
+			appMessage: 'This mobile version does not have the slideshow switch',
+			emptyMessage: 'You have no notes yet.\nCreate a new one!'
 		},
 		user: {
 			id: 0,
@@ -155,18 +160,7 @@ var store = new Vuex.Store({
 		},
 		slideStyle: function(state, getters) {
 			return function(noteID) {
-				/*
-				let left = null;
-				if (!state.status.slideIsShow) {
-					if (getters.slideClass(noteID).previous) {
-						left = getters.slideLeftValue;
-					} else if (getters.slideClass(noteID).next) {
-						left = '-' + getters.slideLeftValue;
-					}
-				}
-				*/
 				return {
-					//'left': left,
 					'width': noteID == state.status.current && state.status.slideIsShow ? getters.slideContentWidth : getters.slideIntialWidth,
 					'margin': noteID == state.status.current && state.status.slideIsShow ? null : getters.slideInitialMargin,
 					'transform-style': state.status.preserve3dSlides ? 'preserve-3d' : null
@@ -216,10 +210,10 @@ var store = new Vuex.Store({
 		}
 	},
 	actions: {
-		login({commit, state}, credentials) {
+		login({state, commit}, credentials) {
 
 		},
-		fetchData({commit, state}, credentials) {
+		fetchData({commit}, credentials) {
 			return new Promise(function(resolve, reject) {
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function() {
@@ -233,9 +227,13 @@ var store = new Vuex.Store({
 								});
 								commit('setCurrentNote', newData.notes[0].id);
 							} else {
-								// TODO no notes
+								commit('toggleStatus', {'isEmpty': true});
 							}
-							commit('toggleStatus', {'isDisplayed': true});
+							let status = {
+								'isLoading': false,
+								'isDisplayed': true
+							};
+							commit('toggleStatus', status);
 							resolve();
 						}, 1000);
 					}
@@ -245,8 +243,7 @@ var store = new Vuex.Store({
 				xhr.send();
 			});
 		},
-		initElements({commit, state}, stepIndex) {
-			let self = this;
+		initElements({state, commit}, stepIndex) {
 			Vue.nextTick().then(function() {
 				window.elements.slides = [].slice.call(window.elements.handle.children);
 				window.elements.dd = new Dragdealer(window.elements.dragger, {
@@ -262,16 +259,14 @@ var store = new Vuex.Store({
 				window.elements.dd.setStep(stepIndex);
 			});
 		},
-		initEvents({commit, state}) {
-			let self = this;
-
+		initEvents({state, getters, commit, dispatch}) {
 			window.addEventListener('resize', function(event) {
 				commit('updateDraggerWidth');
 			});
 
 			document.addEventListener('mousewheel', function(event) {
 				if (!state.status.isContent) {
-					let index = self.getters.noteIndex(state.status.current);
+					let index = getters.noteIndex(state.status.current);
 					if (event.deltaY < 0) {
 						// Scroll up = previous slide
 						window.elements.dd.setStep(index);
@@ -290,17 +285,17 @@ var store = new Vuex.Store({
 						case 38: // Up arrow key
 							// Toggle content only if content is scrolled to topmost
 							if (currentSlide.scrollTop === 0) {
-								this.dispatch('toggleContent');
+								dispatch('toggleNote');
 							}
 							break;
 					}
 				} else {
-					let index = self.getters.noteIndex(state.status.current);
+					let index = getters.noteIndex(state.status.current);
 					switch (keyCode) {
 						case 40: // Down arrow key
 							// Toggle content only if it's fullscreen
 							if (state.status.isFullscreen) {
-								this.dispatch('toggleContent');
+								dispatch('toggleNote');
 							}
 							break;
 						case 37: // Left arrow key
@@ -313,23 +308,27 @@ var store = new Vuex.Store({
 				}
 			});
 		},
-		draggerClickHandler({commit, state}) {
-			this.dispatch('toggle');
+		draggerClickHandler({dispatch}) {
+			dispatch('toggleScreen');
 		},
-		slideClickHandler({commit, state}, noteID) {
+		slideClickHandler({state, getters, dispatch}, noteID) {
 			if (!state.status.isFullscreen && !state.status.isAnimating && !window.elements.dd.activity) {
 				if (noteID === state.status.current) {
-					this.dispatch('toggle');
+					dispatch('toggleScreen');
 				} else {
-					let index = this.getters.noteIndex(noteID);
+					let index = getters.noteIndex(noteID);
 					window.elements.dd.setStep(index + 1);
 				}
 			}
 		},
-		contentSwitchHandler({commit, state}) {
-			this.dispatch('toggleContent');
+		noteToggleHandler({dispatch}) {
+			dispatch('toggleNote');
 		},
-		contentEditHandler({commit, state}, noteID) {
+		noteAddHandler({commit}) {
+			// TODO generate note ID
+			commit('toggleStatus', {'isEmpty': false});
+		},
+		noteEditHandler({commit}, noteID) {
 			commit('toggleStatus', {'isEditing': true});
 			Vue.nextTick(function() {
 				window.elements.editor = new Quill('#content-' + noteID, {
@@ -340,15 +339,15 @@ var store = new Vuex.Store({
 				});
 			});
 		},
-		contentDeleteHandler({commit, state}, noteID) {
-			this.dispatch('toggleContent');
+		noteDeleteHandler({getters, commit, dispatch}, noteID) {
+			dispatch('toggleNote');
 
-			let index = this.getters.noteIndex(noteID);
+			let index = getters.noteIndex(noteID);
 			let stepIndex = index;
 			if (index <= 0) {
 				// If the first note is deleted
 				stepIndex = 1;
-			} else if (index >= this.getters.notesCount - 1) {
+			} else if (index >= getters.notesCount - 1) {
 				// If the last note is deleted
 				stepIndex = index;
 			} else {
@@ -357,21 +356,16 @@ var store = new Vuex.Store({
 
 			commit('deleteNote', noteID);
 
-			if (this.getters.notesCount == 0) {
-				// TODO
-				alert('All notes deleted!');
+			if (getters.notesCount == 0) {
+				commit('toggleStatus', {'isEmpty': true});
 			} else {
-				this.dispatch('initElements', stepIndex);
+				dispatch('initElements', stepIndex);
 			}
 		},
-		contentSaveHandler({commit, state}, note) {
+		noteSaveHandler({state, getters, commit}, note) {
 			// If there are changes, save
 			// Else, cancel
-			let index = this.getters.noteIndex(note.id);
-			console.log(note.title == state.notes[index].title)
-			console.log(note.content == state.notes[index].content)
-			console.log(note.content)
-			console.log(state.notes[index].content)
+			let index = getters.noteIndex(note.id);
 			if (note.title != state.notes[index].title
 				|| note.content != state.notes[index].content) {
 					note.timestamp = moment().valueOf();
@@ -379,13 +373,19 @@ var store = new Vuex.Store({
 				}
 			commit('toggleStatus', {'isEditing': false});
 		},
-		contentCancelHandler({commit, state}) {
-			commit('toggleStatus', {'isEditing': false});
+		noteCancelHandler({state, getters, commit}) {
+			let status = {
+				'isEditing': false
+			};
+			if (getters.notesCount == 0) {
+				status['isEmpty'] = true;
+			}
+			commit('toggleStatus', status);
 		},
 		/**
 		 * Function to toggle between fullscreen and minimized slideshow
 		 */
-		toggle({commit, state}) {
+		toggleScreen({state, commit, dispatch}) {
 			if (state.status.isAnimating) return false;
 
 			// Callback
@@ -406,13 +406,12 @@ var store = new Vuex.Store({
 			}
 			commit('toggleStatus', status);
 
-			let self = this;
 			let onEndTransitionFn = function(event) {
 				if (support.transitions) {
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.dragger) return;
 					this.removeEventListener(transEndEventName, onEndTransitionFn);
 				}
-				self.dispatch('toggleEnd');
+				dispatch('toggleScreenEnd');
 			};
 
 			if (support.transitions) {
@@ -421,7 +420,7 @@ var store = new Vuex.Store({
 				onEndTransitionFn();
 			}
 		},
-		toggleEnd({commit, state}) {
+		toggleScreenEnd({state, commit}) {
 			let status = {
 				'isAnimating': false,
 				'isFullscreen': !state.status.isFullscreen,
@@ -447,11 +446,11 @@ var store = new Vuex.Store({
 		/**
 		 * Function to show/hide slide content
 		 */
-		toggleContent({commit, state}) {
+		toggleNote({state, commit, dispatch}) {
 			if (state.status.isAnimating) return false;
 
 			// Callback
-			// state.options.onToggleContent();
+			// state.options.ontoggleNote();
 
 			let slide = document.querySelector('#slide-' + state.status.current);
 			slide.scrollTop = 0;
@@ -460,12 +459,14 @@ var store = new Vuex.Store({
 				'isAnimating': true
 			};
 			if (state.status.isContent) {
+				console.log('enable')
 				window.elements.dd.enable();
 				window.elements.dd.bindEventListeners();
 				status['appIsShowContent'] = false;
 				status['slideIsShow'] = false;
 				status['containerIsFixed'] = false;
 			} else {
+				console.log('disable')
 				window.elements.dd.disable();
 				window.elements.dd.unbindEventListeners();
 				status['appIsSwitchShow'] = true;
@@ -474,13 +475,12 @@ var store = new Vuex.Store({
 			}
 			commit('toggleStatus', status);
 
-			let self = this;
 			let onEndTransitionFn = function(event) {
 				if (support.transitions) {
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.slideshow) return;
 					this.removeEventListener(transEndEventName, onEndTransitionFn);
 				}
-				self.dispatch('toggleContentEnd');
+				dispatch('toggleNoteEnd');
 			};
 
 			if (support.transitions) {
@@ -489,7 +489,7 @@ var store = new Vuex.Store({
 				onEndTransitionFn();
 			}
 		},
-		toggleContentEnd({commit, state}) {
+		toggleNoteEnd({state, commit}) {
 			let status = {
 				'isAnimating': false,
 				'isContent': !state.status.isContent
@@ -503,7 +503,7 @@ var store = new Vuex.Store({
 			commit('toggleStatus', status);
 
 			// Callback
-			// state.options.onToggleContentComplete();
+			// state.options.ontoggleNoteComplete();
 		}
 	}
 });
