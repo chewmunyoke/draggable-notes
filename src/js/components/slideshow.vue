@@ -1,11 +1,17 @@
 <template>
-	<transition name="display">
+	<transition name="v-display">
 		<div class="slideshow"
 			:class="slideshowClass"
 			v-show="status.isDisplayed">
 			<div class="dragdealer dragger"
 				:class="draggerClass"
 				:style="draggerStyle">
+				<transition name="v-overlay">
+					<div class="empty"
+						v-if="status.isEmpty">
+						{{ text.emptyMessage }}
+					</div>
+				</transition>
 				<div class="handle"
 					:style="handleStyle">
 					<div class="slide"
@@ -44,25 +50,25 @@
 							<div class="content-switch-wrapper">
 								<div class="button-wrapper content-switch-wrapper">
 									<button class="button content-switch"
-										@click="contentSwitchHandler">
+										@click="noteToggleHandler">
 									</button>
 								</div>
 								<div class="button-wrapper content-edit-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
 									<button class="button content-edit"
-										@click="contentEditHandler(note.id)">
+										@click="noteEditHandler(note.id)">
 									</button>&nbsp;
 									<button class="button content-delete"
-										@click="contentDeleteHandler(note.id)">
+										@click="noteDeleteHandler(note.id)">
 									</button>
 								</div>
 								<div class="button-wrapper content-save-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
 									<button class="button content-save"
-										@click="contentSaveHandler(note.id)">
+										@click="noteSaveHandler(note.id)">
 									</button>&nbsp;
 									<button class="button content-cancel"
-										@click="contentCancelHandler">
+										@click="noteCancelHandler">
 									</button>
 								</div>
 							</div>
@@ -75,12 +81,13 @@
 </template>
 
 <script>
-	import { mapState, mapGetters, mapMutations } from 'vuex';
+	import { mapState, mapGetters, mapActions } from 'vuex';
 
 	export default {
 		computed: {
 			...mapState([
 				'status',
+				'text',
 				'notes'
 			]),
 			...mapGetters([
@@ -94,18 +101,18 @@
 			])
 		},
 		methods: {
-			...mapMutations([
+			...mapActions([
 				'slideClickHandler',
-				'contentSwitchHandler',
-				'contentEditHandler',
-				'contentCancelHandler'
+				'noteToggleHandler',
+				'noteEditHandler',
+				'noteCancelHandler'
 			]),
-			contentDeleteHandler: function(noteID) {
+			noteDeleteHandler: function(noteID) {
 				if (confirm('Are you sure you want to delete this note?')) {
-					this.$store.commit('contentDeleteHandler', noteID);
+					this.$store.dispatch('noteDeleteHandler', noteID);
 				}
 			},
-			contentSaveHandler: function(noteID) {
+			noteSaveHandler: function(noteID) {
 				// TODO validation
 				let newTitle = document.querySelector('#title-' + noteID).value;
 				let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
@@ -114,7 +121,7 @@
 					title: newTitle,
 					content: newContent
 				};
-				this.$store.commit('contentSaveHandler', note);
+				this.$store.dispatch('noteSaveHandler', note);
 			}
 		}
 	};

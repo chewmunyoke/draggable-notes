@@ -1,0 +1,77 @@
+@keyframes ellipsis {
+	0% {
+		left: 32px;
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	}
+	20% {
+		left: 32px;
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
+	40% {
+		left: 100px;
+	}
+	60% {
+		left: 168px;
+		-webkit-transform: scale(1);
+		transform: scale(1);
+	}
+	80% {
+		left: 168px;
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	}
+	100% {
+		left: 100px;
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	}
+}
+
+.preloader {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 200px;
+	height: 200px;
+	margin: auto;
+	transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+	> div {
+		position: absolute;
+		width: 40px;
+		height: 40px;
+		transform: translate(-50%, -50%);
+	}
+	div > div {
+		position: absolute;
+		top: 100px;
+		left: 32px;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: #f00;
+		animation: ellipsis 2.5s cubic-bezier(0, 0.5, 0.5, 1) infinite forwards;
+	}
+	div:nth-child(1) div {
+		background: #43cea2;
+		animation-delay: -2s;
+	}
+	div:nth-child(2) div {
+		background: #38b1a1;
+		animation-delay: -1.5s;
+	}
+	div:nth-child(3) div {
+		background: #2e94a0;
+		animation-delay: -1s;
+	}
+	div:nth-child(4) div {
+		background: #23779e;
+		animation-delay: -0.5s;
+	}
+	div:nth-child(5) div {
+		background: #185a9d;
+	}
+}

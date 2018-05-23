@@ -1,0 +1,38 @@
+/* Vue.js Transitions */
+[v-cloak] {
+	display: none;
+}
+.v-display-enter-active,
+.v-display-leave-active {
+	transition: transform 0.5s;
+}
+.v-display-enter,
+.v-display-leave-to {
+	transform: translateY(60%);
+}
+.v-overlay-enter-active,
+.v-overlay-leave-active {
+	transition: opacity 0.5s;
+}
+.v-overlay-enter,
+.v-overlay-leave-to {
+	opacity: 0;
+}
+
+/* Quill.js CSS Override */
+.ql-container {
+	font-family: inherit !important;
+	font-size: inherit !important;
+}
+.ql-editor {
+	p, ol, ul, pre {
+		margin: 1em 0 !important;
+	}
+	blockquote {
+		padding-left: inherit !important;
+		font-style: inherit !important;
+	}
+	pre {
+		font-family: monospace;
+	}
+}

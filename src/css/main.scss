@@ -1,4 +1,8 @@
-@import '~quill/dist/quill.snow';
 @import 'normalize';
+@import '~quill/dist/quill.snow';
+@import '_plugin';
 @import '_base';
-@import '_dragslideshow';
+@import '_preloader';
+@import '_header';
+@import '_slideshow';
+@import '_media';
