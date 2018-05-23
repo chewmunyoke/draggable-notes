@@ -294,7 +294,6 @@ export default new Vuex.Store({
 						case 38: // Up arrow key
 							// Toggle content only if content is scrolled to topmost
 							if (currentSlide.scrollTop === 0) {
-								commit('toggleContent');
 								dispatch('toggleNote');
 							}
 							break;
