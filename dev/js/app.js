@@ -1,13 +1,21 @@
 let mapState = Vuex.mapState;
 let mapGetters = Vuex.mapGetters;
-let mapMutations = Vuex.mapMutations;
+let mapActions = Vuex.mapActions;
+
+let preloaderComponent = {
+	template: '#preloader-component',
+	computed: {
+		...mapState([
+			'status'
+		])
+	}
+};
 
 let headerComponent = {
 	template: '#header-component',
 	computed: {
 		...mapState([
-			'appTitle',
-			'appMessage'
+			'text'
 		]),
 		...mapGetters([
 			'headerClass',
@@ -15,22 +23,18 @@ let headerComponent = {
 		])
 	},
 	methods: {
-		...mapMutations([
+		...mapActions([
 			'draggerClickHandler'
 		])
 	}
 };
 
-let app = new Vue({
-	store,
-	el: '#app',
-	components: {
-		'header-component': headerComponent
-	},
+let slideshowComponent = {
+	template: '#slideshow-component',
 	computed: {
 		...mapState([
 			'status',
-			'elements',
+			'text',
 			'user',
 			'notes'
 		]),
@@ -45,18 +49,18 @@ let app = new Vue({
 		])
 	},
 	methods: {
-		...mapMutations([
+		...mapActions([
 			'slideClickHandler',
-			'contentSwitchHandler',
-			'contentEditHandler',
-			'contentCancelHandler'
+			'noteToggleHandler',
+			'noteEditHandler',
+			'noteCancelHandler'
 		]),
-		contentDeleteHandler: function(noteID) {
+		noteDeleteHandler: function(noteID) {
 			if (confirm('Are you sure you want to delete this note?')) {
-				this.$store.commit('contentDeleteHandler', noteID);
+				this.$store.dispatch('noteDeleteHandler', noteID);
 			}
 		},
-		contentSaveHandler: function(noteID) {
+		noteSaveHandler: function(noteID) {
 			// TODO validation
 			let newTitle = document.querySelector('#title-' + noteID).value;
 			let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
@@ -65,8 +69,18 @@ let app = new Vue({
 				title: newTitle,
 				content: newContent
 			};
-			this.$store.commit('contentSaveHandler', note);
+			this.$store.dispatch('noteSaveHandler', note);
 		}
+	}
+};
+
+let app = new Vue({
+	store,
+	el: '#app',
+	components: {
+		'preloader-component': preloaderComponent,
+		'header-component': headerComponent,
+		'slideshow-component': slideshowComponent
 	},
 	mounted: function() {
 		let app = this;

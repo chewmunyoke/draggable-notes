@@ -1,0 +1,60 @@
+@media screen and (max-width: 650px) {
+	.message {
+		display: block;
+	}
+	.overlay .info span {
+		&.info-keys,
+		&.info-switch {
+			display: none;
+		}
+	}
+}
+@media screen and (max-width: 30em) {
+	.overlay .info span {
+		width: 100px;
+		height: 100px;
+		font-size: 0.5em;
+	}
+}
+@media screen and (max-width: 650px) {
+	button.dragger-switch {
+		display: none;
+	}
+}
+@media screen and (max-height: 400px) {
+	.header {
+		top: 2em;
+	}
+	.dragger {
+		top: 35%;
+		height: 65%;
+		&.dragger-small {
+			.note {
+				padding: 10px;
+				.title-container {
+					.title {
+						padding: 0;
+						font-size: 1.2em;
+					}
+					.subtitle {
+						display: none;
+					}
+					.timestamp {
+						font-size: 0.8em;
+					}
+				}
+			}
+		}
+	}
+	.content-button-container {
+		top: 60%;
+	}
+	.slide.show {
+		.content-button-container {
+			top: -35%;
+		}
+		.content-switch-wrapper {
+			top: 65%;
+		}
+	}
+}

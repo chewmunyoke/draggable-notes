@@ -1,7 +1,7 @@
 <template>
 	<header class="header" :class="headerClass">
-		<h1>{{ appTitle }}</h1>
-		<span class="message">{{ appMessage }}</span>
+		<h1>{{ text.appTitle }}</h1>
+		<span class="message">{{ text.appMessage }}</span>
 		<button class="dragger-switch"
 			:class="draggerButtonClass"
 			@click="draggerClickHandler">
@@ -11,13 +11,12 @@
 </template>
 
 <script>
-	import { mapState, mapGetters, mapMutations } from 'vuex';
+	import { mapState, mapGetters, mapActions } from 'vuex';
 
 	export default {
 		computed: {
 			...mapState([
-				'appTitle',
-				'appMessage'
+				'text'
 			]),
 			...mapGetters([
 				'headerClass',
@@ -25,7 +24,7 @@
 			])
 		},
 		methods: {
-			...mapMutations([
+			...mapActions([
 				'draggerClickHandler'
 			])
 		}

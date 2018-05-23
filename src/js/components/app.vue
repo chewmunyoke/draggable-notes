@@ -1,7 +1,8 @@
 <template>
-	<section class="main" v-cloak>
+	<section class="app" v-cloak>
 		<header-component />
 		<slideshow-component />
+		<preloader-component />
 	</section>
 </template>
 
@@ -9,18 +10,13 @@
 	import { mapState } from 'vuex';
 	import HeaderComponent from './header.vue';
 	import SlideshowComponent from './slideshow.vue';
+	import PreloaderComponent from './preloader.vue';
 
 	export default {
 		components: {
 			HeaderComponent,
-			SlideshowComponent
-		},
-		computed: {
-			...mapState([
-				'status',
-				'user',
-				'notes'
-			])
+			SlideshowComponent,
+			PreloaderComponent
 		},
 		mounted: function() {
 			let app = this;

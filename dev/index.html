@@ -10,20 +10,67 @@
 		<!--link rel="shortcut icon" href="../favicon.ico"-->
 		<link href='https://fonts.googleapis.com/css?family=Playfair+Display:900,400|Lato:300,400,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
-		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<script src="js/modernizr.custom.js"></script>
 	</head>
 	<body>
-		<section id="app" class="main" v-cloak>
+		<section id="app" class="app" v-cloak>
 			<header-component></header-component>
-			<transition name="display">
+			<slideshow-component></slideshow-component>
+			<preloader-component></preloader-component>
+		</section>
+
+		<template id="preloader-component">
+			<transition name="v-overlay">
+				<div class="overlay" v-show="status.isLoading">
+					<div class="preloader">
+						<div>
+							<div></div>
+						</div>
+						<div>
+							<div></div>
+						</div>
+						<div>
+							<div></div>
+						</div>
+						<div>
+							<div></div>
+						</div>
+						<div>
+							<div></div>
+						</div>
+					</div>
+				</div>
+			</transition>
+		</template>
+
+		<template id="header-component">
+			<header id="header" class="header" :class="headerClass">
+				<h1>{{ text.appTitle }}</h1>
+				<span class="message">{{ text.appMessage }}</span>
+				<button class="dragger-switch"
+					:class="draggerButtonClass"
+					@click="draggerClickHandler">
+					Switch view
+				</button>
+			</header>
+		</template>
+
+		<template id="slideshow-component">
+			<transition name="v-display">
 				<div class="slideshow"
 					:class="slideshowClass"
 					v-show="status.isDisplayed">
 					<div class="dragdealer dragger"
 						:class="draggerClass"
 						:style="draggerStyle">
+						<transition name="v-overlay">
+							<div class="empty"
+								v-if="status.isEmpty">
+								{{ text.emptyMessage }}
+							</div>
+						</transition>
 						<div class="handle"
 							:style="handleStyle">
 							<div class="slide"
@@ -61,25 +108,25 @@
 									:style="containerStyle(note.id)">
 									<div class="button-wrapper content-switch-wrapper">
 										<button class="button content-switch"
-											@click="contentSwitchHandler">
+											@click="noteToggleHandler">
 										</button>
 									</div>
 									<div class="button-wrapper content-edit-wrapper"
 										v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
 										<button class="button content-edit"
-											@click="contentEditHandler(note.id)">
-										</button>
+											@click="noteEditHandler(note.id)">
+										</button>&nbsp;
 										<button class="button content-delete"
-											@click="contentDeleteHandler(note.id)">
+											@click="noteDeleteHandler(note.id)">
 										</button>
 									</div>
 									<div class="button-wrapper content-save-wrapper"
 										v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
 										<button class="button content-save"
-											@click="contentSaveHandler(note.id)">
+											@click="noteSaveHandler(note.id)">
 										</button>&nbsp;
 										<button class="button content-cancel"
-											@click="contentCancelHandler">
+											@click="noteCancelHandler">
 										</button>
 									</div>
 								</div>
@@ -88,18 +135,6 @@
 					</div>
 				</div>
 			</transition>
-		</section>
-
-		<template id="header-component">
-			<header id="header" class="header" :class="headerClass">
-				<h1>{{ appTitle }}</h1>
-				<span class="message">{{ appMessage }}</span>
-				<button class="dragger-switch"
-					:class="draggerButtonClass"
-					@click="draggerClickHandler">
-					Switch view
-				</button>
-			</header>
 		</template>
 
 		<script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
@@ -107,6 +142,7 @@
 		<script src="js/moment.min.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/vuex.js"></script>
+		<script src="js/logger.js"></script>
 		<script src="js/dragdealer.js"></script>
 		<script src="js/store.js"></script>
 		<script src="js/app.js"></script>
