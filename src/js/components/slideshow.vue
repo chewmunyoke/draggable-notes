@@ -9,7 +9,11 @@
 				<transition name="v-overlay">
 					<div class="empty"
 						v-if="status.isEmpty">
-						{{ text.emptyMessage }}
+						<p>{{ text.emptyMessage }}</p>
+						<button class="button note-add"
+							@click="noteAddHandler">
+								<span>{{ text.emptyButton }}</span>
+						</button>
 					</div>
 				</transition>
 				<div class="handle"
@@ -30,7 +34,8 @@
 							</div>
 							<div class="title-editor"
 								v-if="note.id == status.current && status.isEditing">
-								<textarea :id="'title-' + note.id"
+								<textarea placeholder="Note Title"
+									:id="'title-' + note.id"
 									v-html="note.title">
 								</textarea>
 							</div>
@@ -45,30 +50,30 @@
 								</div>
 							</div>
 						</div>
-						<div class="content-button-container"
+						<div class="note-button-container"
 							:style="containerStyle(note.id)">
-							<div class="content-switch-wrapper">
-								<div class="button-wrapper content-switch-wrapper">
-									<button class="button content-switch"
+							<div class="note-toggle-wrapper">
+								<div class="button-wrapper note-toggle-wrapper">
+									<button class="button note-toggle"
 										@click="noteToggleHandler">
 									</button>
 								</div>
-								<div class="button-wrapper content-edit-wrapper"
+								<div class="button-wrapper note-edit-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
-									<button class="button content-edit"
+									<button class="button note-edit"
 										@click="noteEditHandler(note.id)">
 									</button>&nbsp;
-									<button class="button content-delete"
+									<button class="button note-delete"
 										@click="noteDeleteHandler(note.id)">
 									</button>
 								</div>
-								<div class="button-wrapper content-save-wrapper"
+								<div class="button-wrapper note-save-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
-									<button class="button content-save"
+									<button class="button note-save"
 										@click="noteSaveHandler(note.id)">
 									</button>&nbsp;
-									<button class="button content-cancel"
-										@click="noteCancelHandler">
+									<button class="button note-cancel"
+										@click="noteCancelHandler(note.id)">
 									</button>
 								</div>
 							</div>
@@ -104,8 +109,8 @@
 			...mapActions([
 				'slideClickHandler',
 				'noteToggleHandler',
-				'noteEditHandler',
-				'noteCancelHandler'
+				'noteAddHandler',
+				'noteEditHandler'
 			]),
 			noteDeleteHandler: function(noteID) {
 				if (confirm('Are you sure you want to delete this note?')) {
@@ -122,6 +127,17 @@
 					content: newContent
 				};
 				this.$store.dispatch('noteSaveHandler', note);
+			},
+			noteCancelHandler: function(noteID) {
+				// TODO validation
+				let newTitle = document.querySelector('#title-' + noteID).value;
+				let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
+				let note = {
+					id: noteID,
+					title: newTitle,
+					content: newContent
+				};
+				this.$store.dispatch('noteCancelHandler', note);
 			}
 		}
 	};

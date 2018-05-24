@@ -12,11 +12,9 @@
 	-webkit-transform: translateY(60px);
 	transform: translateY(60%);
 }
-.v-overlay-enter-active,
 .v-overlay-leave-active {
 	transition: opacity 0.5s;
 }
-.v-overlay-enter,
 .v-overlay-leave-to {
 	opacity: 0;
 }

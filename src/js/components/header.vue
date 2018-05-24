@@ -1,12 +1,16 @@
 <template>
-	<header class="header" :class="headerClass">
-		<h1>{{ text.appTitle }}</h1>
-		<span class="message">{{ text.appMessage }}</span>
-		<button class="dragger-switch"
-			:class="draggerButtonClass"
-			@click="draggerClickHandler">
-			Switch view
-		</button>
+	<header id="header" class="header" :class="headerClass">
+		<div>
+			<h1>{{ text.appName }}</h1>
+			<span>{{ text.appMessage }}</span>
+		</div>
+		<div>
+			<button class="dragger-switch" title="Switch view"
+				:class="draggerButtonClass"
+				@click="draggerClickHandler"
+				v-if="!status.isEmpty">
+			</button>
+		</div>
 	</header>
 </template>
 
@@ -16,6 +20,7 @@
 	export default {
 		computed: {
 			...mapState([
+				'status',
 				'text'
 			]),
 			...mapGetters([

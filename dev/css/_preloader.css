@@ -89,24 +89,24 @@
 }
 .preloader div:nth-child(1) div {
 	background: #43cea2;
-	-webkit-animation-delay: -2s;
-	animation-delay: -2s;
-}
-.preloader div:nth-child(2) div {
-	background: #38b1a1;
 	-webkit-animation-delay: -1.5s;
 	animation-delay: -1.5s;
 }
-.preloader div:nth-child(3) div {
-	background: #2e94a0;
+.preloader div:nth-child(2) div {
+	background: #38b1a1;
 	-webkit-animation-delay: -1s;
 	animation-delay: -1s;
 }
-.preloader div:nth-child(4) div {
-	background: #23779e;
+.preloader div:nth-child(3) div {
+	background: #2e94a0;
 	-webkit-animation-delay: -0.5s;
 	animation-delay: -0.5s;
 }
+.preloader div:nth-child(4) div {
+	background: #23779e;
+}
 .preloader div:nth-child(5) div {
 	background: #185a9d;
+	-webkit-animation-delay: -2s;
+	animation-delay: -2s;
 }

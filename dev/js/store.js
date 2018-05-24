@@ -34,6 +34,7 @@ var store = new Vuex.Store({
 			isEmpty: false,
 			isFullscreen: true,
 			isContent: false,
+			isNewNote: false,
 			isEditing: false,
 			isAnimating: false,
 			appIsSwitchMax: false,
@@ -58,9 +59,10 @@ var store = new Vuex.Store({
 			slideContentMargin: 20
 		},
 		text: {
-			appTitle: 'Draggable Notes',
-			appMessage: 'This mobile version does not have the slideshow switch',
-			emptyMessage: 'You have no notes yet.\nCreate a new one!'
+			appName: 'Draggable Notes',
+			appMessage: '',
+			emptyMessage: 'You have no notes yet.',
+			emptyButton: 'Create a new one!'
 		},
 		user: {
 			id: 0,
@@ -182,6 +184,7 @@ var store = new Vuex.Store({
 				//Vue.set(state.user, key, user[key]);
 				state.user[key] = user[key];
 			}
+			state.text.appMessage = 'Welcome, ' + user.name;
 		},
 		setCurrentNote(state, noteID) {
 			state.status.current = noteID;
@@ -221,6 +224,8 @@ var store = new Vuex.Store({
 						let newData = JSON.parse(this.responseText);
 						setTimeout(function() {
 							commit('setUser', newData.user);
+							// TODO HERE
+							//newData.notes = [];
 							if (newData.notes.length > 0) {
 								newData.notes.forEach(function(note) {
 									commit('addNote', setNote(note));
@@ -243,20 +248,30 @@ var store = new Vuex.Store({
 				xhr.send();
 			});
 		},
-		initElements({state, commit}, stepIndex) {
+		initElements({state, getters, commit}, stepIndex) {
 			Vue.nextTick().then(function() {
 				window.elements.slides = [].slice.call(window.elements.handle.children);
-				window.elements.dd = new Dragdealer(window.elements.dragger, {
-					steps: state.notes.length,
-					speed: 0.3,
-					loose: true,
-					callback: function(x, y) {
-						let index = this.getStep()[0] - 1;
-						if (isNaN(index)) index = 0;
-						commit('setCurrentNote', state.notes[index].id);
+				if (window.elements.dd) {
+					window.elements.dd.unbindEventListeners();
+				}
+				if (getters.notesCount > 0) {
+					if (state.status.isEmpty) {
+						commit('toggleStatus', {'isEmpty': false});
 					}
-				});
-				window.elements.dd.setStep(stepIndex);
+					window.elements.dd = new Dragdealer(window.elements.dragger, {
+						steps: getters.notesCount,
+						speed: 0.3,
+						loose: true,
+						callback: function(x, y) {
+							let index = this.getStep()[0] - 1;
+							if (isNaN(index)) index = 0;
+							commit('setCurrentNote', state.notes[index].id);
+						}
+					});
+					window.elements.dd.setStep(stepIndex);
+				} else {
+					commit('toggleStatus', {'isEmpty': true});
+				}
 			});
 		},
 		initEvents({state, getters, commit, dispatch}) {
@@ -265,7 +280,7 @@ var store = new Vuex.Store({
 			});
 
 			document.addEventListener('mousewheel', function(event) {
-				if (!state.status.isContent) {
+				if (!state.status.isEmpty && !state.status.isContent) {
 					let index = getters.noteIndex(state.status.current);
 					if (event.deltaY < 0) {
 						// Scroll up = previous slide
@@ -278,32 +293,33 @@ var store = new Vuex.Store({
 			});
 
 			document.addEventListener('keydown', function(event) {
-				let keyCode = event.keyCode || event.which;
-
-				if (state.status.isContent && !state.status.isEditing) {
-					switch (keyCode) {
-						case 38: // Up arrow key
-							// Toggle content only if content is scrolled to topmost
-							if (currentSlide.scrollTop === 0) {
-								dispatch('toggleNote');
-							}
-							break;
-					}
-				} else {
-					let index = getters.noteIndex(state.status.current);
-					switch (keyCode) {
-						case 40: // Down arrow key
-							// Toggle content only if it's fullscreen
-							if (state.status.isFullscreen) {
-								dispatch('toggleNote');
-							}
-							break;
-						case 37: // Left arrow key
-							window.elements.dd.setStep(index);
-							break;
-						case 39: // Right arrow key
-							window.elements.dd.setStep(index + 2);
-							break;
+				if (!state.status.isEmpty) {
+					let keyCode = event.keyCode || event.which;
+					if (state.status.isContent && !state.status.isEditing) {
+						switch (keyCode) {
+							case 38: // Up arrow key
+								// Toggle content only if content is scrolled to topmost
+								if (currentSlide.scrollTop === 0) {
+									dispatch('toggleNote');
+								}
+								break;
+						}
+					} else {
+						let index = getters.noteIndex(state.status.current);
+						switch (keyCode) {
+							case 40: // Down arrow key
+								// Toggle content only if it's fullscreen
+								if (state.status.isFullscreen) {
+									dispatch('toggleNote');
+								}
+								break;
+							case 37: // Left arrow key
+								window.elements.dd.setStep(index);
+								break;
+							case 39: // Right arrow key
+								window.elements.dd.setStep(index + 2);
+								break;
+						}
 					}
 				}
 			});
@@ -324,15 +340,28 @@ var store = new Vuex.Store({
 		noteToggleHandler({dispatch}) {
 			dispatch('toggleNote');
 		},
-		noteAddHandler({commit}) {
-			// TODO generate note ID
-			commit('toggleStatus', {'isEmpty': false});
+		noteAddHandler({state, getters, commit, dispatch}) {
+			// TODO temporary note ID generator
+			let newID = state.user.id + '_note_' + (state.notes.length + 1);
+			let note = {
+				id: newID,
+				title: '',
+				content: '<p><br></p>'
+			};
+			commit('addNote', note);
+			commit('toggleStatus', {'isNewNote': true});
+			dispatch('initElements', getters.notesCount);
+			Vue.nextTick().then(function() {
+				dispatch('toggleNote');
+				dispatch('noteEditHandler', note.id);
+			});
 		},
 		noteEditHandler({commit}, noteID) {
 			commit('toggleStatus', {'isEditing': true});
 			Vue.nextTick(function() {
 				window.elements.editor = new Quill('#content-' + noteID, {
 					theme: 'snow',
+					placeholder: 'Note Content',
 					modules: {
 						toolbar: toolbarOptions
 					}
@@ -340,6 +369,7 @@ var store = new Vuex.Store({
 			});
 		},
 		noteDeleteHandler({getters, commit, dispatch}, noteID) {
+			commit('toggleStatus', {'isLoading': true});
 			dispatch('toggleNote');
 
 			let index = getters.noteIndex(noteID);
@@ -355,12 +385,11 @@ var store = new Vuex.Store({
 			}
 
 			commit('deleteNote', noteID);
-
-			if (getters.notesCount == 0) {
-				commit('toggleStatus', {'isEmpty': true});
-			} else {
-				dispatch('initElements', stepIndex);
-			}
+			dispatch('initElements', stepIndex);
+			// TODO temporary
+			setTimeout(function() {
+				commit('toggleStatus', {'isLoading': false});
+			}, 1000);
 		},
 		noteSaveHandler({state, getters, commit}, note) {
 			// If there are changes, save
@@ -368,19 +397,36 @@ var store = new Vuex.Store({
 			let index = getters.noteIndex(note.id);
 			if (note.title != state.notes[index].title
 				|| note.content != state.notes[index].content) {
-					note.timestamp = moment().valueOf();
-					commit('saveNote', setNote(note));
-				}
-			commit('toggleStatus', {'isEditing': false});
-		},
-		noteCancelHandler({state, getters, commit}) {
-			let status = {
-				'isEditing': false
-			};
-			if (getters.notesCount == 0) {
-				status['isEmpty'] = true;
+				note.timestamp = moment().valueOf();
+				commit('toggleStatus', {'isLoading': true});
+				commit('saveNote', setNote(note));
 			}
-			commit('toggleStatus', status);
+			// TODO temporary
+			setTimeout(function() {
+				let status = {
+					'isEditing': false,
+					'isLoading': false
+				}
+				commit('toggleStatus', status);
+			}, 1000);
+		},
+		noteCancelHandler({state, getters, commit, dispatch}, note) {
+			// If there are changes, ask for confirmation
+			// Else, cancel
+			let index = getters.noteIndex(note.id);
+			let response = true;
+			if (note.title != state.notes[index].title
+				|| note.content != state.notes[index].content) {
+				note.timestamp = moment().valueOf();
+				response = confirm('Are you sure you want to discard changes?');
+			}
+			if (response) {
+				commit('toggleStatus', {'isEditing': false});
+				if (state.status.isNewNote) {
+					commit('toggleStatus', {'isNewNote': false});
+					dispatch('noteDeleteHandler', note.id);
+				}
+			}
 		},
 		/**
 		 * Function to toggle between fullscreen and minimized slideshow
@@ -459,14 +505,12 @@ var store = new Vuex.Store({
 				'isAnimating': true
 			};
 			if (state.status.isContent) {
-				console.log('enable')
 				window.elements.dd.enable();
 				window.elements.dd.bindEventListeners();
 				status['appIsShowContent'] = false;
 				status['slideIsShow'] = false;
 				status['containerIsFixed'] = false;
 			} else {
-				console.log('disable')
 				window.elements.dd.disable();
 				window.elements.dd.unbindEventListeners();
 				status['appIsSwitchShow'] = true;
@@ -507,9 +551,3 @@ var store = new Vuex.Store({
 		}
 	}
 });
-
-function setNote(note) {
-	note.datestamp = moment(note.timestamp).format('LLLL');
-	note.lastUpdated = moment(note.timestamp).fromNow();
-	return note;
-}

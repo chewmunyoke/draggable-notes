@@ -15,6 +15,7 @@ let headerComponent = {
 	template: '#header-component',
 	computed: {
 		...mapState([
+			'status',
 			'text'
 		]),
 		...mapGetters([
@@ -52,8 +53,8 @@ let slideshowComponent = {
 		...mapActions([
 			'slideClickHandler',
 			'noteToggleHandler',
-			'noteEditHandler',
-			'noteCancelHandler'
+			'noteAddHandler',
+			'noteEditHandler'
 		]),
 		noteDeleteHandler: function(noteID) {
 			if (confirm('Are you sure you want to delete this note?')) {
@@ -70,6 +71,17 @@ let slideshowComponent = {
 				content: newContent
 			};
 			this.$store.dispatch('noteSaveHandler', note);
+		},
+		noteCancelHandler: function(noteID) {
+			// TODO validation
+			let newTitle = document.querySelector('#title-' + noteID).value;
+			let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
+			let note = {
+				id: noteID,
+				title: newTitle,
+				content: newContent
+			};
+			this.$store.dispatch('noteCancelHandler', note);
 		}
 	}
 };

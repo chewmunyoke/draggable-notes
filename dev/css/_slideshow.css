@@ -162,6 +162,8 @@
 	padding: 30px;
 	border-radius: 30px 30px 0 0;
 	background-color: #dfe3e3;
+	-webkit-box-shadow: 10px 10px 30px -5px rgba(0, 0, 0, 0.5);
+	box-shadow: 10px 10px 30px -5px rgba(0, 0, 0, 0.5);
 	-webkit-transition-property: padding, height;
 	transition-property: padding, height;
 	-webkit-transition-duration: 0.5s;
@@ -176,6 +178,9 @@
 	border-radius: 30px;
 	-webkit-transition-duration: 1s;
 	transition-duration: 1s;
+}
+.dragger-large .slide:not(.show) .note {
+	height: 120%;
 }
 .dragger-small .slide .note {
 	border-radius: 10px;
@@ -239,43 +244,17 @@
 }
 .slide.show .title-container {
 	opacity: 0;
-	-webkit-animation: slideUpFade2 0.5s 1s forwards;
-	animation: slideUpFade2 0.5s 1s forwards;
+	-webkit-animation: slideUpFade2 0.5s 0.5s forwards;
+	animation: slideUpFade2 0.5s 0.5s forwards;
 }
 .slide.show .content {
 	opacity: 0;
-	-webkit-animation: slideUpFade2 0.5s 1.5s forwards;
-	animation: slideUpFade2 0.5s 1.5s forwards;
+	-webkit-animation: slideUpFade2 0.5s 1s forwards;
+	animation: slideUpFade2 0.5s 1s forwards;
 }
 
-/* Switch Button */
-button.dragger-switch {
-	position: relative;
-	float: right;
-	overflow: hidden;
-	padding: 0;
-	width: 80px;
-	height: 80px;
-	border: none;
-	background: url(../images/switchmin.svg) no-repeat center center;
-	background-size: 90%;
-	color: transparent;
-	font-size: 0;
-	outline: none;
-	opacity: 0.7;
-	pointer-events: auto;
-	-webkit-transition: opacity 0.5s;
-	transition: opacity 0.5s;
-}
-button.dragger-switch.view-max {
-	background-image: url(../images/switchmax.svg)
-}
-button.dragger-switch:hover {
-	opacity: 1;
-}
-
-/* Content Buttons */
-.content-button-container {
+/* Note Buttons */
+.note-button-container {
 	position: absolute;
 	top: 70%;
 	width: 100%;
@@ -285,7 +264,7 @@ button.dragger-switch:hover {
 	-webkit-transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 	transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 }
-.dragger-small .content-button-container {
+.dragger-small .note-button-container {
 	opacity: 0;
 	pointer-events: none;
 }
@@ -295,11 +274,11 @@ button.dragger-switch:hover {
 	-webkit-transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 	transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 }
-.content-switch-wrapper {
+.note-toggle-wrapper {
 	left: 50%;
 }
-.content-edit-wrapper,
-.content-save-wrapper {
+.note-edit-wrapper,
+.note-save-wrapper {
 	left: 80%;
 }
 .button {
@@ -316,39 +295,57 @@ button.dragger-switch:hover {
 	opacity: 0.5;
 	outline: none;
 	cursor: pointer;
+	-webkit-transition-property: opacity, border-color, background-color, color;
+	transition-property: opacity, border-color, background-color, color;
+	-webkit-transition-duration: 0.5s;
+	transition-duration: 0.5s;
 }
-.content-edit-wrapper .button,
-.content-save-wrapper .button {
+.note-edit-wrapper .button,
+.note-save-wrapper .button {
 	padding: 1em 1.6em;
 	background-size: 40%;
 }
-button.content-switch {
+.button.note-toggle {
 	left: -50%;
 	background-image: url(../images/arrow-up.svg);
 }
-.slide.show button.content-switch {
+.slide.show .button.note-toggle {
 	background-image: url(../images/arrow-down.svg);
 }
-button.content-edit {
+.button.note-add {
+	border-color: #e7edee;
+	opacity: 1;
+}
+.button.note-add span {
+	color: #e7edee;
+	font-weight: bold;
+}
+.button.note-add:hover {
+	background-color: #e7edee;
+	color: #2c3135;
+}
+.button.note-add:hover span {
+	background: -webkit-linear-gradient(to bottom right, #185a9d, #43cea2);
+	background: linear-gradient(to bottom right, #185a9d, #43cea2);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+.button.note-edit {
 	background-image: url(../images/edit.svg);
 }
-button.content-delete {
+.button.note-delete {
 	background-image: url(../images/trash-2.svg);
 }
-button.content-save {
+.button.note-save {
 	background-image: url(../images/save.svg);
 }
-button.content-cancel {
+.button.note-cancel {
 	background-image: url(../images/x.svg);
 }
 .button:hover {
 	opacity: 1;
 }
-.dragger-large .button {
-	-webkit-transition: opacity 0.5s, color 0.5s, border-color 0.5s;
-	transition: opacity 0.5s, color 0.5s, border-color 0.5s;
-}
-.slide.show .content-button-container {
+.slide.show .note-button-container {
 	top: -42%;
 	-webkit-transition-duration: 1s;
 	transition-duration: 1s;
@@ -368,6 +365,11 @@ button.content-cancel {
 .slideshow.switch-max .dragger-small .slide.next {
 	left: -4.5%;
 }
+.switch-min .dragger-large,
+.switch-max .dragger-small {
+	-webkit-transition: -webkit-transform 0.6s cubic-bezier(.7, 0, .3, 1);
+	transition: transform 0.6s cubic-bezier(.7, 0, .3, 1);
+}
 .switch-min .dragger-large .slide,
 .switch-max .dragger-small .slide {
 	background-color: #dfe3e3;
@@ -382,12 +384,6 @@ button.content-cancel {
 	-webkit-transition: none;
 	transition: none;
 }
-.switch-min .dragger-large,
-.switch-max .dragger-small {
-	-webkit-transition: -webkit-transform 0.6s cubic-bezier(.7, 0, .3, 1);
-	transition: transform 0.6s cubic-bezier(.7, 0, .3, 1);
-}
-
-.dragdealer .disabled {
-	background: none;
+.switch-min .dragger-large .slide .note {
+	height: 100%;
 }

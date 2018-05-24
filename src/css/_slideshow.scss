@@ -70,9 +70,9 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 			display: flex;
 			height: 100%;
 			transform-style: preserve-3d;
-			&.disabled {
-				background: none;
-			}
+		}
+		&.dragger-large .slide:not(.show) .note {
+			height: 120%;
 		}
 		&.dragger-small .slide {
 			.note {
@@ -128,6 +128,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 		padding: 30px;
 		border-radius: 30px 30px 0 0;
 		background-color: #dfe3e3;
+		box-shadow: 10px 10px 30px -5px rgba(0, 0, 0, 0.5);
 		transition-property: padding, height;
 		transition-duration: 0.5s;
 		transition-timing-function: $cubic-bezier;
@@ -194,11 +195,11 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 			transition-duration: 1s;
 			.title-container {
 				opacity: 0;
-				animation: slideUpFade2 0.5s 1s forwards;
+				animation: slideUpFade2 0.5s 0.5s forwards;
 			}
 			.content {
 				opacity: 0;
-				animation: slideUpFade2 0.5s 1.5s forwards;
+				animation: slideUpFade2 0.5s 1s forwards;
 			}
 		}
 	}
@@ -209,33 +210,8 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 	}
 }
 
-/* Switch Button */
-button.dragger-switch {
-	position: relative;
-	float: right;
-	overflow: hidden;
-	padding: 0;
-	width: 80px;
-	height: 80px;
-	border: none;
-	background: url(../images/switchmin.svg) no-repeat center center;
-	background-size: 90%;
-	color: transparent;
-	font-size: 0;
-	outline: none;
-	opacity: 0.7;
-	pointer-events: auto;
-	transition: opacity 0.5s;
-	&.view-max {
-		background-image: url(../images/switchmax.svg);
-	}
-	&:hover {
-		opacity: 1;
-	}
-}
-
-/* Content Button */
-.content-button-container {
+/* Note Button */
+.note-button-container {
 	position: absolute;
 	top: 70%;
 	width: 100%;
@@ -247,7 +223,7 @@ button.dragger-switch {
 		rgba(255, 255, 255, 0) 100%);
 	transition: top 0.5s $cubic-bezier;
 }
-.dragger-small .content-button-container {
+.dragger-small .note-button-container {
 	opacity: 0;
 	pointer-events: none;
 }
@@ -257,11 +233,11 @@ button.dragger-switch {
 	left: 50%;
 	transition: top 0.5s $cubic-bezier;
 }
-.content-switch-wrapper {
+.note-toggle-wrapper {
 	left: 50%;
 }
-.content-edit-wrapper,
-.content-save-wrapper {
+.note-edit-wrapper,
+.note-save-wrapper {
 	left: 80%;
 	.button {
 		padding: 1em 1.6em;
@@ -282,32 +258,48 @@ button.dragger-switch {
 	opacity: 0.5;
 	outline: none;
 	cursor: pointer;
+	transition-property: opacity, border-color, background-color, color;
+	transition-duration: 0.5s;
 	&:hover {
 		opacity: 1;
 	}
-	&.content-switch {
+	&.note-toggle {
 		left: -50%;
 		background-image: url(../images/arrow-up.svg);
 	}
-	&.content-edit {
+	&.note-add {
+		border-color: #e7edee;
+		opacity: 1;
+		span {
+			color: #e7edee;
+			font-weight: bold;
+		}
+		&:hover {
+			background-color: #e7edee;
+			color: #2c3135;
+			span {
+				background: linear-gradient(to bottom right, #185a9d, #43cea2);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+		}
+	}
+	&.note-edit {
 		background-image: url(../images/edit.svg);
 	}
-	&.content-delete {
+	&.note-delete {
 		background-image: url(../images/trash-2.svg);
 	}
-	&.content-save {
+	&.note-save {
 		background-image: url(../images/save.svg);
 	}
-	&.content-cancel {
+	&.note-cancel {
 		background-image: url(../images/x.svg);
 	}
 }
-.dragger-large .button {
-	transition: opacity 0.5s, color 0.5s, border-color 0.5s;
-}
 
 .slide.show {
-	.content-button-container {
+	.note-button-container {
 		top: -42%;
 		transition-duration: 1s;
 	}
@@ -315,7 +307,7 @@ button.dragger-switch {
 		top: 75%;
 		transition-duration: 1s;
 	}
-	.button.content-switch {
+	.button.note-toggle {
 		background-image: url(../images/arrow-down.svg);
 	}
 }
@@ -356,5 +348,8 @@ button.dragger-switch {
 		/* fade out everything */
 		opacity: 0;
 		transition: none;
+	}
+	&.switch-min .dragger.dragger-large .slide .note {
+		height: 100%;
 	}
 }
