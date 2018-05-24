@@ -60,19 +60,19 @@
 								</div>
 								<div class="button-wrapper note-edit-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
-									<button class="button note-edit"
+									<button class="button note-edit" title="Edit"
 										@click="noteEditHandler(note.id)">
 									</button>&nbsp;
-									<button class="button note-delete"
+									<button class="button note-delete" title="Delete"
 										@click="noteDeleteHandler(note.id)">
 									</button>
 								</div>
 								<div class="button-wrapper note-save-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
-									<button class="button note-save"
+									<button class="button note-save" title="Save"
 										@click="noteSaveHandler(note.id)">
 									</button>&nbsp;
-									<button class="button note-cancel"
+									<button class="button note-cancel" title="Cancel"
 										@click="noteCancelHandler(note.id)">
 									</button>
 								</div>
