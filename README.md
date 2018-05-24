@@ -37,10 +37,15 @@ npm run build
 
 ## Task list
 
-- [ ] Adding, updating & deleting notes
+- [x] Convert mockup to code
+- [x] CRUD functions of notes
+- [x] WYSIWYG editor
+- [ ] Database
 - [ ] User login
-- [ ] Additional format for notes
-- [ ] Cross browser testing
+- [ ] Linters
+- [ ] Testing
+- [ ] Themes (optional)
+- [ ] To-do list feature (future enhancement)
 
 ## Credits
 
