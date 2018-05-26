@@ -2,30 +2,10 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import moment from 'moment';
 import Quill from 'quill';
-import Dragdealer from './dragdealer.js';
-import createLogger from './logger.js';
-import { setNote } from './helper.js';
-
-let docElem = window.document.documentelements,
-	transEndEventNames = {
-		'WebkitTransition': 'webkitTransitionEnd',
-		'MozTransition': 'transitionend',
-		'OTransition': 'oTransitionEnd',
-		'msTransition': 'MSTransitionEnd',
-		'transition': 'transitionend'
-	},
-	transEndEventName = transEndEventNames[Modernizr.prefixed('transition')],
-	support = {transitions : Modernizr.csstransitions};
-
-let toolbarOptions = [
-	//[{ 'font': [] }, { 'size': [] }],
-	['bold', 'italic', 'underline', 'strike'],
-	[{ 'script': 'sub'}, { 'script': 'super' }],
-	//[{ 'color': [] }, { 'background': [] }],
-	[{ 'list': 'ordered'}, { 'list': 'bullet' }],
-	['blockquote', 'code-block', 'link'],
-	['clean']
-];
+import plugins from './plugins';
+import Dragdealer from './utils/dragdealer';
+import { transEndEventName, support, toolbarOptions, STORAGE_KEY } from './utils/constants';
+import { setNote } from './utils/helper';
 
 //let debug = process.env.NODE_ENV !== 'production';
 let debug = true;
@@ -33,7 +13,7 @@ let debug = true;
 Vue.use(Vuex);
 export default new Vuex.Store({
 	strict: debug,
-	plugins: debug ? [createLogger()] : [],
+	plugins: debug ? plugins : [],
 	state: {
 		// App initial state
 		status: {
@@ -227,6 +207,7 @@ export default new Vuex.Store({
 		},
 		fetchData({commit}, credentials) {
 			return new Promise(function(resolve, reject) {
+				/*
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function() {
 					if (this.readyState == 4 && this.status == 200) {
@@ -253,6 +234,22 @@ export default new Vuex.Store({
 				//xhr.open('GET', 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad', true);
 				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/6', true);
 				xhr.send();
+				*/
+				let data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+				if (data && data.notes.length > 0) {
+					data.notes.forEach(function(note) {
+						commit('addNote', setNote(note));
+					});
+					commit('setCurrentNote', data.notes[0].id);
+				} else {
+					commit('toggleStatus', {'isEmpty': true});
+				}
+				let status = {
+					'isLoading': false,
+					'isDisplayed': true
+				};
+				commit('toggleStatus', status);
+				resolve();
 			});
 		},
 		initElements({state, getters, commit}, stepIndex) {

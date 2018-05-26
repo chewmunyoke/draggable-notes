@@ -1,30 +1,10 @@
-let docElem = window.document.documentelements,
-	transEndEventNames = {
-		'WebkitTransition': 'webkitTransitionEnd',
-		'MozTransition': 'transitionend',
-		'OTransition': 'oTransitionEnd',
-		'msTransition': 'MSTransitionEnd',
-		'transition': 'transitionend'
-	},
-	transEndEventName = transEndEventNames[Modernizr.prefixed('transition')],
-	support = {transitions : Modernizr.csstransitions};
-
-let toolbarOptions = [
-	//[{ 'font': [] }, { 'size': [] }],
-	['bold', 'italic', 'underline', 'strike'],
-	[{ 'script': 'sub'}, { 'script': 'super' }],
-	//[{ 'color': [] }, { 'background': [] }],
-	[{ 'list': 'ordered'}, { 'list': 'bullet' }],
-	['blockquote', 'code-block', 'link'],
-	['clean']
-];
 
 //let debug = process.env.NODE_ENV !== 'production';
 let debug = true;
 
-var store = new Vuex.Store({
+let store = new Vuex.Store({
 	strict: debug,
-	plugins: debug ? [createLogger()] : [],
+	plugins: debug ? [createLogger(), localStoragePlugin] : [],
 	state: {
 		// App initial state
 		status: {
@@ -218,19 +198,20 @@ var store = new Vuex.Store({
 		},
 		fetchData({commit}, credentials) {
 			return new Promise(function(resolve, reject) {
+				/*
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function() {
 					if (this.readyState == 4 && this.status == 200) {
-						let newData = JSON.parse(this.responseText);
+						let data = JSON.parse(this.responseText);
 						setTimeout(function() {
-							commit('setUser', newData.user);
+							commit('setUser', data.user);
 							// TODO HERE
-							//newData.notes = [];
-							if (newData.notes.length > 0) {
-								newData.notes.forEach(function(note) {
+							//data.notes = [];
+							if (data.notes.length > 0) {
+								data.notes.forEach(function(note) {
 									commit('addNote', setNote(note));
 								});
-								commit('setCurrentNote', newData.notes[0].id);
+								commit('setCurrentNote', data.notes[0].id);
 							} else {
 								commit('toggleStatus', {'isEmpty': true});
 							}
@@ -246,6 +227,22 @@ var store = new Vuex.Store({
 				//xhr.open('GET', 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad', true);
 				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/6', true);
 				xhr.send();
+				*/
+				let data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+				if (data && data.notes.length > 0) {
+					data.notes.forEach(function(note) {
+						commit('addNote', setNote(note));
+					});
+					commit('setCurrentNote', data.notes[0].id);
+				} else {
+					commit('toggleStatus', {'isEmpty': true});
+				}
+				let status = {
+					'isLoading': false,
+					'isDisplayed': true
+				};
+				commit('toggleStatus', status);
+				resolve();
 			});
 		},
 		initElements({state, getters, commit}, stepIndex) {
