@@ -44,8 +44,9 @@ npm run build
 - [ ] User login
 - [ ] Linters
 - [ ] Testing
+- [ ] Search
+- [ ] Additional features (to-do, reminder)
 - [ ] Themes (optional)
-- [ ] To-do list feature (future enhancement)
 
 ## Credits
 
