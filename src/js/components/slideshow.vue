@@ -9,10 +9,14 @@
 				<transition name="v-overlay">
 					<div class="empty"
 						v-if="status.isEmpty">
-						<p>{{ text.emptyMessage }}</p>
+						<p>
+							{{ text.emptyMessage }}
+						</p>
 						<button class="button note-add"
 							@click="noteAddHandler">
-								<span>{{ text.emptyButton }}</span>
+							<span>
+								{{ text.emptyButton }}
+							</span>
 						</button>
 					</div>
 				</transition>
@@ -28,9 +32,16 @@
 						<div class="note">
 							<div class="title-container"
 								v-if="!(note.id == status.current && status.isEditing)">
-								<span class="title">{{ note.title }}</span>
-								<span class="subtitle">Last Updated: </span>
-								<span class="timestamp" :title="note.datestamp">{{ note.lastUpdated }}</span>
+								<span class="title">
+									{{ note.title || "Untitled" }}
+								</span>
+								<span class="subtitle">
+									Last Updated: 
+								</span>
+								<span class="timestamp" 
+									:title="note.datestamp">
+									{{ note.lastUpdated }}
+								</span>
 							</div>
 							<div class="title-editor"
 								v-if="note.id == status.current && status.isEditing">
@@ -53,26 +64,31 @@
 						<div class="note-button-container"
 							:style="containerStyle(note.id)">
 							<div class="note-toggle-wrapper">
-								<div class="button-wrapper note-toggle-wrapper">
+								<div class="button-wrapper note-toggle-wrapper"
+									v-if="!status.isEditing">
 									<button class="button note-toggle"
 										@click="noteToggleHandler">
 									</button>
 								</div>
 								<div class="button-wrapper note-edit-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
-									<button class="button note-edit" title="Edit"
+									<button title="Edit"
+										class="button note-edit"
 										@click="noteEditHandler(note.id)">
 									</button>&nbsp;
-									<button class="button note-delete" title="Delete"
+									<button title="Delete"
+										class="button note-delete"
 										@click="noteDeleteHandler(note.id)">
 									</button>
 								</div>
 								<div class="button-wrapper note-save-wrapper"
 									v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
-									<button class="button note-save" title="Save"
+									<button title="Save"
+										class="button note-save"
 										@click="noteSaveHandler(note.id)">
 									</button>&nbsp;
-									<button class="button note-cancel" title="Cancel"
+									<button title="Cancel"
+										class="button note-cancel"
 										@click="noteCancelHandler(note.id)">
 									</button>
 								</div>
@@ -118,7 +134,6 @@
 				}
 			},
 			noteSaveHandler: function(noteID) {
-				// TODO validation
 				let newTitle = document.querySelector('#title-' + noteID).value;
 				let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
 				let note = {
@@ -129,7 +144,6 @@
 				this.$store.dispatch('noteSaveHandler', note);
 			},
 			noteCancelHandler: function(noteID) {
-				// TODO validation
 				let newTitle = document.querySelector('#title-' + noteID).value;
 				let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
 				let note = {

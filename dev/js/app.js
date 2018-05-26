@@ -62,7 +62,6 @@ let slideshowComponent = {
 			}
 		},
 		noteSaveHandler: function(noteID) {
-			// TODO validation
 			let newTitle = document.querySelector('#title-' + noteID).value;
 			let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
 			let note = {

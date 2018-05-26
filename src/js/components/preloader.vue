@@ -1,6 +1,7 @@
 <template>
 	<transition name="v-overlay">
-		<div class="overlay" v-show="status.isLoading">
+		<div class="overlay" 
+			v-show="status.isLoading">
 			<div class="preloader">
 				<div>
 					<div></div>

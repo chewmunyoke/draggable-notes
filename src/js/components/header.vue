@@ -1,11 +1,17 @@
 <template>
-	<header id="header" class="header" :class="headerClass">
+	<header class="header" 
+		:class="headerClass">
 		<div>
-			<h1>{{ text.appName }}</h1>
-			<span>{{ text.appMessage }}</span>
+			<h1>
+				{{ text.appName }}
+			</h1>
+			<span>
+				{{ text.appMessage }}
+			</span>
 		</div>
 		<div>
-			<button class="dragger-switch" title="Switch view"
+			<button title="Switch view"
+				class="dragger-switch"
 				:class="draggerButtonClass"
 				@click="draggerClickHandler"
 				v-if="!status.isEmpty">
