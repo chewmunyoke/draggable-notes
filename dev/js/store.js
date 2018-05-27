@@ -32,7 +32,7 @@ let store = new Vuex.Store({
 			return 'calc(' + (state.options.draggerWidthPct / getters.notesCount) + '% - ' + state.options.slideContentMargin + 'px';
 		},
 		slideLeftValue: function(state) {
-			return (state.draggerWidth * 0.14) + 'px';
+			return (state.status.draggerWidth * 0.14) + 'px';
 		},
 		draggerToggledWidth: function(state) {
 			return state.options.slideshowRatio * state.options.draggerWidthPct + '%';
@@ -91,7 +91,18 @@ let store = new Vuex.Store({
 		},
 		slideStyle: function(state, getters) {
 			return function(noteID) {
+				let index = getters.noteIndex(noteID);
+				let currentIndex = getters.noteIndex(state.status.current);
+				let left = null;
+				if (!state.status.appIsSwitchMin && !state.status.appIsSwitchShow && !state.status.draggerIsToggled) {
+					if (index == currentIndex - 1) {
+						left = getters.slideLeftValue;
+					} else if (index == currentIndex + 1) {
+						left = '-' + getters.slideLeftValue;
+					}
+				}
 				return {
+					'left': left,
 					'width': noteID == state.status.current && state.status.slideIsShow ? getters.slideContentWidth : getters.slideIntialWidth,
 					'margin': noteID == state.status.current && state.status.slideIsShow ? null : getters.slideInitialMargin,
 					'transform-style': state.status.preserve3dSlides ? 'preserve-3d' : null
@@ -155,8 +166,8 @@ let store = new Vuex.Store({
 						setTimeout(function() {
 							commit('setUser', data.user);
 							// TODO HERE
-							data.notes.pop();
-							data.notes.pop();
+							//data.notes.pop();
+							//data.notes.pop();
 							if (data.notes.length > 0) {
 								data.notes.forEach(function(note) {
 									commit('addNote', setNote(note));
@@ -220,6 +231,7 @@ let store = new Vuex.Store({
 						}
 					});
 					window.elements.dd.setStep(stepIndex);
+					commit('updateDraggerWidth');
 				} else {
 					commit('toggleStatus', {'isEmpty': true});
 				}
@@ -293,7 +305,7 @@ let store = new Vuex.Store({
 		},
 		noteAddHandler({state, getters, commit, dispatch}) {
 			// TODO temporary note ID generator
-			let newID = state.user.id + '_note_' + (state.notes.length + 1);
+			let newID = state.user.id + '_note_' + (getters.notesCount + 1);
 			let note = {
 				id: newID,
 				title: '',
@@ -302,10 +314,10 @@ let store = new Vuex.Store({
 			commit('addNote', note);
 			commit('toggleStatus', {'isNewNote': true});
 			dispatch('initElements', getters.notesCount);
-			Vue.nextTick().then(function() {
+			setTimeout(function() {
 				dispatch('toggleNote');
 				dispatch('noteEditHandler', note.id);
-			});
+			}, 500);
 		},
 		noteEditHandler({commit}, noteID) {
 			commit('toggleStatus', {'isEditing': true});
@@ -438,6 +450,7 @@ let store = new Vuex.Store({
 			Vue.nextTick().then(function() {
 				// Reinstatiate the dragger with the "reflow" method
 				window.elements.dd.reflow();
+				commit('updateDraggerWidth');
 			});
 		},
 		/**
