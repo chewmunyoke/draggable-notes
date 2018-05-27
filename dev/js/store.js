@@ -317,7 +317,7 @@ let store = new Vuex.Store({
 			setTimeout(function() {
 				dispatch('toggleNote');
 				dispatch('noteEditHandler', note.id);
-			}, 500);
+			}, 250);
 		},
 		noteEditHandler({commit}, noteID) {
 			commit('toggleStatus', {'isEditing': true});

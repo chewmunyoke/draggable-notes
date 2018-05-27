@@ -6,20 +6,6 @@
 			<div class="dragdealer dragger"
 				:class="draggerClass"
 				:style="draggerStyle">
-				<transition name="v-overlay">
-					<div class="empty"
-						v-if="status.isEmpty">
-						<p>
-							{{ text.emptyMessage }}
-						</p>
-						<button class="button note-add"
-							@click="noteAddHandler">
-							<span>
-								{{ text.emptyButton }}
-							</span>
-						</button>
-					</div>
-				</transition>
 				<div class="handle"
 					:style="handleStyle">
 					<div class="slide"

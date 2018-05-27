@@ -1,7 +1,11 @@
 const localStoragePlugin = store => {
+	const TYPES = ['saveNote', 'deleteNote'];
 	store.subscribe((mutation, state) => {
-		const data = {user: state.user, notes: state.notes}
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+		if (TYPES.indexOf(mutation.type) > -1) {
+			const data = {user: state.user, notes: state.notes}
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+			console.log('localStorage updated: ' + mutation.type);
+		}
 	});
 };
 
