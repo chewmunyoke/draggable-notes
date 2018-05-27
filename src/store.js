@@ -4,7 +4,7 @@ import moment from 'moment';
 import Quill from 'quill';
 import plugins from './plugins';
 import Dragdealer from './utils/dragdealer';
-import { transEndEventName, support, toolbarOptions, STORAGE_KEY } from './utils/constants';
+import * as constants from './utils/constants';
 import { setNote } from './utils/helper';
 
 //let debug = process.env.NODE_ENV !== 'production';
@@ -14,53 +14,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
 	strict: debug,
 	plugins: debug ? plugins : [],
-	state: {
-		// App initial state
-		status: {
-			current: 0,
-			isLoading: true,
-			isDisplayed: false,
-			isEmpty: false,
-			isFullscreen: true,
-			isContent: false,
-			isNewNote: false,
-			isEditing: false,
-			isAnimating: false,
-			appIsSwitchMax: false,
-			appIsSwitchMin: false,
-			appIsSwitchShow: false,
-			appIsShowContent: false,
-			draggerButtonIsToggled: false,
-			draggerIsToggled: false,
-			draggerIsTransforming: false,
-			draggerWidth: 0,
-			slideIsShow: false,
-			containerIsFixed: false,
-			preserve3dSlides: false // fixes rendering problem in firefox
-		},
-		// App default options
-		options: {
-			perspective: 1200,
-			slideshowRatio: 0.3,
-			draggerWidthPct: 100,
-			draggerHeightPct: 60,
-			slideWidthPct: 80,
-			slideContentMargin: 20
-		},
-		text: {
-			appName: 'Draggable Notes',
-			appMessage: '',
-			emptyMessage: 'You have no notes yet.',
-			emptyButton: 'Create a new one!'
-		},
-		user: {
-			user_id: 0,
-			name: "Test User",
-			username: "test",
-			password: "test"
-		},
-		notes: []
-	},
+	state: constants.state,
 	getters: {
 		notesCount: function(state) {
 			return state.notes.length;
@@ -235,7 +189,8 @@ export default new Vuex.Store({
 				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/6', true);
 				xhr.send();
 				*/
-				let data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+				let data = JSON.parse(localStorage.getItem(constants.STORAGE_KEY));
+				commit('setUser', data.user);
 				if (data && data.notes.length > 0) {
 					data.notes.forEach(function(note) {
 						commit('addNote', setNote(note));
@@ -457,15 +412,15 @@ export default new Vuex.Store({
 			commit('toggleStatus', status);
 
 			let onEndTransitionFn = function(event) {
-				if (support.transitions) {
+				if (constants.support.transitions) {
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.dragger) return;
-					this.removeEventListener(transEndEventName, onEndTransitionFn);
+					this.removeEventListener(constants.transEndEventName, onEndTransitionFn);
 				}
 				dispatch('toggleScreenEnd');
 			};
 
-			if (support.transitions) {
-				window.elements.dragger.addEventListener(transEndEventName, onEndTransitionFn);
+			if (constants.support.transitions) {
+				window.elements.dragger.addEventListener(constants.transEndEventName, onEndTransitionFn);
 			} else {
 				onEndTransitionFn();
 			}
@@ -524,14 +479,14 @@ export default new Vuex.Store({
 			commit('toggleStatus', status);
 
 			let onEndTransitionFn = function(event) {
-				if (support.transitions) {
+				if (constants.support.transitions) {
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.slideshow) return;
 					this.removeEventListener(transEndEventName, onEndTransitionFn);
 				}
 				dispatch('toggleNoteEnd');
 			};
 
-			if (support.transitions) {
+			if (constants.support.transitions) {
 				window.elements.slideshow.addEventListener(transEndEventName, onEndTransitionFn);
 			} else {
 				onEndTransitionFn();

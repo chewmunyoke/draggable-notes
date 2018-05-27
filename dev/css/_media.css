@@ -1,54 +1,43 @@
-@media screen and (min-width: 39em) {
-	body {
-		font-size: 1.1em;
-	}
-}
-@media screen and (min-width: 48em) {
-	body {
-		font-size: 1.2em;
-	}
-}
-@media screen and (min-width: 52em) {
-	body {
-		font-size: 1.356em;
-	}
-}
-@media screen and (min-width: 78.75em) {
+@media screen and (max-width: 1080px) {
 	body {
 		font-size: 1.5em;
 	}
+	.slide .title {
+		font-size: 2.9em;
+	}
 }
-@media screen and (min-width: 88.75em) {
+@media screen and (max-width: 800px) {
 	body {
-		font-size: 1.6em;
+		font-size: 1.4em;
+	}
+	.slide .title {
+		font-size: 2.8em;
+	}
+}
+@media screen and (max-width: 640px), (max-height: 640px) {
+	body {
+		font-size: 1.2em;
+	}
+	.slide .title {
+		font-size: 2.6em;
+	}
+	.slide .subtitle {
+		font-size: 1.1em;
+	}
+}
+@media screen and (max-width: 480px), (max-height: 480px) {
+	body {
+		font-size: 1em;
+	}
+	.slide .title {
+		font-size: 2.4em;
+	}
+	.slide .subtitle {
+		font-size: 1em;
 	}
 }
 
-@media screen and (max-width: 650px) {
-	.message {
-		display: block;
-	}
-	.overlay .info span.info-keys,
-	.overlay .info span.info-switch {
-		display: none;
-	}
-}
-
-@media screen and (max-width: 30em) {
-	.overlay .info span {
-		width: 100px;
-		height: 100px;
-		font-size: 0.5em;
-	}
-}
-
-@media screen and (max-width: 650px) {
-	button.dragger-switch {
-		display: none;
-	}
-}
-
-@media screen and (max-height: 400px) {
+@media screen and (max-height: 480px) {
 	.header {
 		top: 2em;
 	}
@@ -69,10 +58,10 @@
 	.dragger-small .timestamp {
 		font-size: 1em;
 	}
-	.content-button-container {
+	.note-button-container {
 		top: 60%;
 	}
-	.slide.show .content-button-container {
+	.slide.show .note-button-container {
 		top: -35%;
 	}
 	.slide.show .button-wrapper {

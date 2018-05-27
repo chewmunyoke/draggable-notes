@@ -39,6 +39,14 @@
 						v-if="!status.isEmpty">
 					</button>
 				</div>
+				<div>
+					<button class="button note-add"
+						@click="noteAddHandler">
+							<span>
+								{{ text.emptyButton }}
+							</span>
+					</button>
+				</div>
 			</header>
 		</template>
 

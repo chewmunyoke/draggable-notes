@@ -64,25 +64,3 @@ html, body {
 	width: 100%;
 	height: 100%;
 }
-
-
-
-@media screen {
-	body {
-		@media (min-width: 39em) {
-			font-size: 1.1em;
-		}
-		@media (min-width: 48em) {
-			font-size: 1.2em;
-		}
-		@media (min-width: 52em) {
-			font-size: 1.356em;
-		}
-		@media (min-width: 78.75em) {
-			font-size: 1.5em;
-		}
-		@media (min-width: 88.75em) {
-			font-size: 1.6em;
-		}
-	}
-}

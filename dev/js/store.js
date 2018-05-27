@@ -5,53 +5,7 @@ let debug = true;
 let store = new Vuex.Store({
 	strict: debug,
 	plugins: debug ? [createLogger(), localStoragePlugin] : [],
-	state: {
-		// App initial state
-		status: {
-			current: 'x',
-			isLoading: true,
-			isDisplayed: false,
-			isEmpty: false,
-			isFullscreen: true,
-			isContent: false,
-			isNewNote: false,
-			isEditing: false,
-			isAnimating: false,
-			appIsSwitchMax: false,
-			appIsSwitchMin: false,
-			appIsSwitchShow: false,
-			appIsShowContent: false,
-			draggerButtonIsToggled: false,
-			draggerIsToggled: false,
-			draggerIsTransforming: false,
-			draggerWidth: 0,
-			slideIsShow: false,
-			containerIsFixed: false,
-			preserve3dSlides: false // fixes rendering problem in firefox
-		},
-		// App default options
-		options: {
-			perspective: 1200,
-			slideshowRatio: 0.3,
-			draggerWidthPct: 100,
-			draggerHeightPct: 60,
-			slideWidthPct: 80,
-			slideContentMargin: 20
-		},
-		text: {
-			appName: 'Draggable Notes',
-			appMessage: '',
-			emptyMessage: 'You have no notes yet.',
-			emptyButton: 'Create a new one!'
-		},
-		user: {
-			id: 0,
-			name: "Test User",
-			username: "test",
-			password: "test"
-		},
-		notes: []
-	},
+	state: state,
 	getters: {
 		notesCount: function(state) {
 			return state.notes.length;
@@ -229,6 +183,7 @@ let store = new Vuex.Store({
 				xhr.send();
 				*/
 				let data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+				commit('setUser', data.user);
 				if (data && data.notes.length > 0) {
 					data.notes.forEach(function(note) {
 						commit('addNote', setNote(note));

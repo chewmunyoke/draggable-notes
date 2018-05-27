@@ -1,27 +1,63 @@
-@media screen and (max-width: 650px) {
-	.message {
-		display: block;
+// Reference: https://www.degordian.com/education/blog/best-practice-for-responsive-typography/
+
+// Breakpoint mixin
+@mixin breakpoint($value, $property) {
+	@media ($property: $value) {
+		@content;
 	}
-	.overlay .info span {
-		&.info-keys,
-		&.info-switch {
-			display: none;
+}
+
+// Responsive font-size mixin
+@mixin font-size-map($font-size-map, $property) {
+	@each $breakpoint, $font-size in $font-size-map {
+		@if $breakpoint == null {
+			font-size: $font-size;
+		} @else {
+			@include breakpoint($breakpoint, $property) {
+				font-size: $font-size;
+			}
 		}
 	}
 }
-@media screen and (max-width: 30em) {
-	.overlay .info span {
-		width: 100px;
-		height: 100px;
-		font-size: 0.5em;
+
+// Breakpoint variables
+$lg: 1080px;
+$md: 800px;
+$sm: 640px;
+$xs: 480px;
+
+// Font-size variables
+$body-font-size-w: (null: 1.6em, $lg: 1.5em, $md: 1.4em, $sm: 1.2em, $xs: 1em);
+$body-font-size-h: ($sm: 1.2em, $xs: 1em);
+$title-font-size-w: (null: 3em, $lg: 2.9em, $md: 2.8em, $sm: 2.6em, $xs: 2.4em);
+$title-font-size-h: ($sm: 2.6em, $xs: 2.4em);
+$subtitle-font-size-w: (null: 1.2em, $sm: 1.1em, $xs: 1em);
+$subtitle-font-size-h: ($sm: 1.1em, $xs: 1em);
+
+body {
+	@include font-size-map($body-font-size-w, max-width);
+}
+.slide .note .title-container {
+	.title {
+		@include font-size-map($title-font-size-w, max-width);
+	}
+	.subtitle {
+		@include font-size-map($subtitle-font-size-w, max-width);
 	}
 }
-@media screen and (max-width: 650px) {
-	button.dragger-switch {
-		display: none;
+body {
+	@include font-size-map($body-font-size-h, max-height);
+}
+.slide .note .title-container {
+	.title {
+		@include font-size-map($title-font-size-h, max-height);
+	}
+	.subtitle {
+		@include font-size-map($subtitle-font-size-h, max-height);
 	}
 }
-@media screen and (max-height: 400px) {
+
+@media screen and (max-height: $xs) {
 	.header {
 		top: 2em;
 	}
@@ -34,7 +70,6 @@
 				.title-container {
 					.title {
 						padding: 0;
-						font-size: 1.2em;
 					}
 					.subtitle {
 						display: none;
@@ -46,14 +81,14 @@
 			}
 		}
 	}
-	.content-button-container {
+	.note-button-container {
 		top: 60%;
 	}
 	.slide.show {
-		.content-button-container {
+		.note-button-container {
 			top: -35%;
 		}
-		.content-switch-wrapper {
+		.note-switch-wrapper {
 			top: 65%;
 		}
 	}

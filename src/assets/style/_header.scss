@@ -21,6 +21,9 @@
 		font-size: 1em;
 		text-transform: uppercase;
 	}
+	button {
+		pointer-events: auto;
+	}
 }
 
 /* Switch Button */
@@ -38,7 +41,6 @@ button.dragger-switch {
 	font-size: 0;
 	outline: none;
 	opacity: 0.7;
-	pointer-events: auto;
 	transition: opacity 0.5s;
 	&.view-max {
 		background-image: url(../images/switchmax.svg);
