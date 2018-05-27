@@ -71,7 +71,7 @@
 									</button>
 								</div>
 								<div class="button-wrapper note-edit-wrapper"
-									v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
+									v-if="note.id == status.current && status.slideIsShow && !status.isEditing">
 									<button title="Edit"
 										class="button note-edit"
 										@click="noteEditHandler(note.id)">
@@ -82,7 +82,7 @@
 									</button>
 								</div>
 								<div class="button-wrapper note-save-wrapper"
-									v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
+									v-if="note.id == status.current && status.slideIsShow && status.isEditing">
 									<button title="Save"
 										class="button note-save"
 										@click="noteSaveHandler(note.id)">

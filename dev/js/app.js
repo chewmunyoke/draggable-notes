@@ -19,13 +19,13 @@ let headerComponent = {
 			'text'
 		]),
 		...mapGetters([
-			'headerClass',
 			'draggerButtonClass'
 		])
 	},
 	methods: {
 		...mapActions([
-			'draggerClickHandler'
+			'draggerClickHandler',
+			'noteAddHandler'
 		])
 	}
 };

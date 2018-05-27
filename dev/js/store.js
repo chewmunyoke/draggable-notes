@@ -43,11 +43,6 @@ let store = new Vuex.Store({
 		handleWidth: function(state, getters) {
 			return getters.notesCount * state.options.draggerWidthPct + '%';
 		},
-		headerClass: function(state) {
-			return {
-				'hide': state.status.appIsSwitchShow
-			};
-		},
 		draggerButtonClass: function(state) {
 			return {
 				'view-max': state.status.draggerButtonIsToggled
@@ -58,7 +53,7 @@ let store = new Vuex.Store({
 				'switch-max': state.status.appIsSwitchMax,
 				'switch-min': state.status.appIsSwitchMin,
 				'switch-show': state.status.appIsSwitchShow,
-				'show-content': state.status.appIsShowContent
+				'show-content': state.status.slideIsShow
 			};
 		},
 		draggerClass: function(state) {
@@ -159,6 +154,9 @@ let store = new Vuex.Store({
 						let data = JSON.parse(this.responseText);
 						setTimeout(function() {
 							commit('setUser', data.user);
+							// TODO HERE
+							data.notes.pop();
+							data.notes.pop();
 							if (data.notes.length > 0) {
 								data.notes.forEach(function(note) {
 									commit('addNote', setNote(note));
@@ -176,8 +174,7 @@ let store = new Vuex.Store({
 						}, 1000);
 					}
 				};
-				//xhr.open('GET', 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad', true);
-				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/6', true);
+				xhr.open('GET', JSON_DATA, true);
 				xhr.send();
 				
 				/*
@@ -461,14 +458,12 @@ let store = new Vuex.Store({
 			if (state.status.isContent) {
 				window.elements.dd.enable();
 				window.elements.dd.bindEventListeners();
-				status['appIsShowContent'] = false;
 				status['slideIsShow'] = false;
 				status['containerIsFixed'] = false;
 			} else {
 				window.elements.dd.disable();
 				window.elements.dd.unbindEventListeners();
 				status['appIsSwitchShow'] = true;
-				status['appIsShowContent'] = true;
 				status['slideIsShow'] = true;
 			}
 			commit('toggleStatus', status);

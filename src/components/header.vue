@@ -1,23 +1,37 @@
 <template>
-	<header class="header" 
-		:class="headerClass">
-		<div>
-			<h1>
-				{{ text.appName }}
-			</h1>
-			<span>
-				{{ text.appMessage }}
-			</span>
-		</div>
-		<div>
-			<button title="Switch view"
-				class="dragger-switch"
-				:class="draggerButtonClass"
-				@click="draggerClickHandler"
-				v-if="!status.isEmpty">
-			</button>
-		</div>
-	</header>
+	<transition name="v-fade">
+				<header class="header"
+					v-if="!status.slideIsShow">
+					<div>
+						<h1>
+							{{ text.appName }}
+						</h1>
+						<span>
+							{{ text.appMessage }}
+						</span>
+					</div>
+					<div>
+						<button title="Switch view"
+							class="dragger-switch"
+							:class="draggerButtonClass"
+							@click="draggerClickHandler"
+							v-if="!status.isEmpty">
+						</button>
+					</div>
+					<div class="button-wrapper note-add-wrapper"
+						v-if="!status.slideIsShow">
+						<p v-if="status.isEmpty">
+							{{ text.emptyMessage }}
+						</p>
+						<button class="button note-add"
+							@click="noteAddHandler">
+							<span>
+								{{ text.emptyButton }}
+							</span>
+						</button>
+					</div>
+				</header>
+			</transition>
 </template>
 
 <script>
@@ -30,13 +44,13 @@
 				'text'
 			]),
 			...mapGetters([
-				'headerClass',
 				'draggerButtonClass'
 			])
 		},
 		methods: {
 			...mapActions([
-				'draggerClickHandler'
+				'draggerClickHandler',
+				'noteAddHandler'
 			])
 		}
 	};

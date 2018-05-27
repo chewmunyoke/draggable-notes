@@ -19,24 +19,39 @@
 		</section>
 
 		<template id="header-component">
-			<header id="header" class="header" :class="headerClass">
-				<div>
-					<h1>
-						{{ text.appName }}
-					</h1>
-					<span>
-						{{ text.appMessage }}
-					</span>
-				</div>
-				<div>
-					<button title="Switch view"
-						class="dragger-switch"
-						:class="draggerButtonClass"
-						@click="draggerClickHandler"
-						v-if="!status.isEmpty">
-					</button>
-				</div>
-			</header>
+			<transition name="v-fade">
+				<header class="header"
+					v-if="!status.slideIsShow">
+					<div>
+						<h1>
+							{{ text.appName }}
+						</h1>
+						<span>
+							{{ text.appMessage }}
+						</span>
+					</div>
+					<div>
+						<button title="Switch view"
+							class="dragger-switch"
+							:class="draggerButtonClass"
+							@click="draggerClickHandler"
+							v-if="!status.isEmpty">
+						</button>
+					</div>
+					<div class="button-wrapper note-add-wrapper"
+						v-if="!status.slideIsShow">
+						<p v-if="status.isEmpty">
+							{{ text.emptyMessage }}
+						</p>
+						<button class="button note-add"
+							@click="noteAddHandler">
+							<span>
+								{{ text.emptyButton }}
+							</span>
+						</button>
+					</div>
+				</header>
+			</transition>
 		</template>
 
 		<template id="slideshow-component">
@@ -47,20 +62,6 @@
 					<div class="dragdealer dragger"
 						:class="draggerClass"
 						:style="draggerStyle">
-						<transition name="v-overlay">
-							<div class="empty"
-								v-if="status.isEmpty">
-								<p>
-									{{ text.emptyMessage }}
-								</p>
-								<button class="button note-add"
-									@click="noteAddHandler">
-										<span>
-											{{ text.emptyButton }}
-										</span>
-								</button>
-							</div>
-						</transition>
 						<div class="handle"
 							:style="handleStyle">
 							<div class="slide"
@@ -111,7 +112,7 @@
 										</button>
 									</div>
 									<div class="button-wrapper note-edit-wrapper"
-										v-if="note.id == status.current && status.appIsShowContent && !status.isEditing">
+										v-if="note.id == status.current && status.slideIsShow && !status.isEditing">
 										<button title="Edit"
 											class="button note-edit"
 											@click="noteEditHandler(note.id)">
@@ -122,7 +123,7 @@
 										</button>
 									</div>
 									<div class="button-wrapper note-save-wrapper"
-										v-if="note.id == status.current && status.appIsShowContent && status.isEditing">
+										v-if="note.id == status.current && status.slideIsShow && status.isEditing">
 										<button title="Save"
 											class="button note-save"
 											@click="noteSaveHandler(note.id)">

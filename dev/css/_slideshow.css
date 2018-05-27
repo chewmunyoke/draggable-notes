@@ -294,8 +294,11 @@
 	-webkit-transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 	transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 }
-.note-toggle-wrapper,
+.note-toggle-wrapper {
+	left: 50%;
+}
 .note-add-wrapper {
+	top: 150%;
 	left: 50%;
 }
 .note-edit-wrapper,
@@ -336,17 +339,20 @@
 .note-add-wrapper p {
 	position: relative;
 	left: -50%;
+	margin-top: 30%;
 	color: #e7edee;
 	text-align: center;
 }
 .button.note-add {
 	left: -50%;
+	padding: 1em;
 	border-color: #e7edee;
 	opacity: 1;
 }
 .button.note-add span {
 	color: #e7edee;
 	font-weight: bold;
+	white-space: nowrap;
 }
 .button.note-add:hover {
 	background-color: #e7edee;

@@ -13,9 +13,22 @@
 	transform: translateY(60%);
 }
 .v-overlay-leave-active {
+	-webkit-transition: opacity 0.5s;
 	transition: opacity 0.5s;
 }
 .v-overlay-leave-to {
+	opacity: 0;
+}
+.v-fade-enter-active {
+	-webkit-transition: opacity 0.5s ease 0.5s;
+	transition: opacity 0.5s ease 0.5s;
+}
+.v-fade-leave-active {
+	-webkit-transition: opacity 0.5s;
+	transition: opacity 0.5s;
+}
+.v-fade-enter,
+.v-fade-leave-to {
 	opacity: 0;
 }
 

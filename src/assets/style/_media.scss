@@ -61,6 +61,12 @@ body {
 @media screen and (max-height: $xs) {
 	.header {
 		top: 2em;
+		> div:nth-child(1) {
+			display: none;
+		}
+	}
+	.button-wrapper.note-add-wrapper {
+		top: 20%;
 	}
 	.dragger {
 		top: 35%;

@@ -67,3 +67,5 @@ const state = {
 };
 
 const STORAGE_KEY = 'draggable-notes';
+//const JSON_DATA = 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad';
+const JSON_DATA = 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/6';
