@@ -294,7 +294,8 @@
 	-webkit-transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 	transition: top 0.5s cubic-bezier(.7, 0, .3, 1);
 }
-.note-toggle-wrapper {
+.note-toggle-wrapper,
+.note-add-wrapper {
 	left: 50%;
 }
 .note-edit-wrapper,
@@ -332,7 +333,14 @@
 .slide.show .button.note-toggle {
 	background-image: url(../images/arrow-down.svg);
 }
+.note-add-wrapper p {
+	position: relative;
+	left: -50%;
+	color: #e7edee;
+	text-align: center;
+}
 .button.note-add {
+	left: -50%;
 	border-color: #e7edee;
 	opacity: 1;
 }

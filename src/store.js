@@ -481,13 +481,13 @@ export default new Vuex.Store({
 			let onEndTransitionFn = function(event) {
 				if (constants.support.transitions) {
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.slideshow) return;
-					this.removeEventListener(transEndEventName, onEndTransitionFn);
+					this.removeEventListener(constants.transEndEventName, onEndTransitionFn);
 				}
 				dispatch('toggleNoteEnd');
 			};
 
 			if (constants.support.transitions) {
-				window.elements.slideshow.addEventListener(transEndEventName, onEndTransitionFn);
+				window.elements.slideshow.addEventListener(constants.transEndEventName, onEndTransitionFn);
 			} else {
 				onEndTransitionFn();
 			}

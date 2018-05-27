@@ -233,7 +233,8 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 	left: 50%;
 	transition: top 0.5s $cubic-bezier;
 }
-.note-toggle-wrapper {
+.note-toggle-wrapper,
+.note-add-wrapper {
 	left: 50%;
 }
 .note-edit-wrapper,
@@ -268,6 +269,7 @@ $cubic-bezier: cubic-bezier(0.7, 0, 0.3, 1);
 		background-image: url(../images/arrow-up.svg);
 	}
 	&.note-add {
+		left: -50%;
 		border-color: #e7edee;
 		opacity: 1;
 		span {

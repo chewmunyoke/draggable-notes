@@ -152,15 +152,13 @@ let store = new Vuex.Store({
 		},
 		fetchData({commit}, credentials) {
 			return new Promise(function(resolve, reject) {
-				/*
+				
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function() {
 					if (this.readyState == 4 && this.status == 200) {
 						let data = JSON.parse(this.responseText);
 						setTimeout(function() {
 							commit('setUser', data.user);
-							// TODO HERE
-							//data.notes = [];
 							if (data.notes.length > 0) {
 								data.notes.forEach(function(note) {
 									commit('addNote', setNote(note));
@@ -181,9 +179,12 @@ let store = new Vuex.Store({
 				//xhr.open('GET', 'https://jsonblob.com/api/jsonBlob/a0b77c20-4699-11e8-b581-9fcf0c943dad', true);
 				xhr.open('GET', 'https://api.jsonbin.io/b/5adde191003aec63328dc0e1/6', true);
 				xhr.send();
-				*/
+				
+				/*
 				let data = JSON.parse(localStorage.getItem(STORAGE_KEY));
 				commit('setUser', data.user);
+				// TODO HERE
+				//data.notes = [];
 				if (data && data.notes.length > 0) {
 					data.notes.forEach(function(note) {
 						commit('addNote', setNote(note));
@@ -198,6 +199,7 @@ let store = new Vuex.Store({
 				};
 				commit('toggleStatus', status);
 				resolve();
+				*/
 			});
 		},
 		initElements({state, getters, commit}, stepIndex) {

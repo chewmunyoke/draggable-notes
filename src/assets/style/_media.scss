@@ -21,28 +21,29 @@
 }
 
 // Breakpoint variables
-$lg: 1080px;
-$md: 800px;
-$sm: 640px;
 $xs: 480px;
+$sm: 640px;
+$md: 800px;
+$lg: 1080px;
+$xl: 1920px;
 
 // Font-size variables
-$body-font-size-w: (null: 1.6em, $lg: 1.5em, $md: 1.4em, $sm: 1.2em, $xs: 1em);
+$body-font-size-w: (null: 1.6em, $xs: 1em, $sm: 1.2em, $md: 1.4em, $lg: 1.5em, $xl: 1.6em);
+$title-font-size-w: (null: 3em, $xs: 2.5em, $sm: 2.6em, $md: 2.7em, $lg: 3em);
+$subtitle-font-size-w: (null: 1.2em, $xs: 1em, $sm: 1.1em);
 $body-font-size-h: ($sm: 1.2em, $xs: 1em);
-$title-font-size-w: (null: 3em, $lg: 2.9em, $md: 2.8em, $sm: 2.6em, $xs: 2.4em);
-$title-font-size-h: ($sm: 2.6em, $xs: 2.4em);
-$subtitle-font-size-w: (null: 1.2em, $sm: 1.1em, $xs: 1em);
+$title-font-size-h: ($sm: 2.6em, $xs: 2.5em);
 $subtitle-font-size-h: ($sm: 1.1em, $xs: 1em);
 
 body {
-	@include font-size-map($body-font-size-w, max-width);
+	@include font-size-map($body-font-size-w, min-width);
 }
 .slide .note .title-container {
 	.title {
-		@include font-size-map($title-font-size-w, max-width);
+		@include font-size-map($title-font-size-w, min-width);
 	}
 	.subtitle {
-		@include font-size-map($subtitle-font-size-w, max-width);
+		@include font-size-map($subtitle-font-size-w, min-width);
 	}
 }
 body {

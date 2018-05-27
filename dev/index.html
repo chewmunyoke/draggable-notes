@@ -8,9 +8,6 @@
 		<meta name="description" content="Draggable Notes" />
 		<meta name="author" content="Angeline" />
 		<!--link rel="shortcut icon" href="../favicon.ico"-->
-		<link href='https://fonts.googleapis.com/css?family=Playfair+Display:900,400|Lato:300,400,700' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="css/normalize.css" />
-		<link rel="stylesheet" type="text/css" href="css/quill.snow.css" />
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<script src="js/modernizr.custom.js"></script>
 	</head>
@@ -37,14 +34,6 @@
 						:class="draggerButtonClass"
 						@click="draggerClickHandler"
 						v-if="!status.isEmpty">
-					</button>
-				</div>
-				<div>
-					<button class="button note-add"
-						@click="noteAddHandler">
-							<span>
-								{{ text.emptyButton }}
-							</span>
 					</button>
 				</div>
 			</header>

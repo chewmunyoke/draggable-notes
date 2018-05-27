@@ -1,20 +1,18 @@
-@media screen and (max-width: 1080px) {
+@media screen and (min-width: 480px) {
 	body {
-		font-size: 1.5em;
+		font-size: 1em;
 	}
 	.slide .title {
-		font-size: 2.9em;
+		font-size: 2.5em;
+	}
+	.slide .subtitle {
+		font-size: 1em;
+	}
+	.button.note-add {
+		padding: 1em;
 	}
 }
-@media screen and (max-width: 800px) {
-	body {
-		font-size: 1.4em;
-	}
-	.slide .title {
-		font-size: 2.8em;
-	}
-}
-@media screen and (max-width: 640px), (max-height: 640px) {
+@media screen and (min-width: 640px) {
 	body {
 		font-size: 1.2em;
 	}
@@ -24,16 +22,60 @@
 	.slide .subtitle {
 		font-size: 1.1em;
 	}
+	.button.note-add {
+		padding: 1em;
+	}
 }
-@media screen and (max-width: 480px), (max-height: 480px) {
+@media screen and (min-width: 800px) {
+	body {
+		font-size: 1.4em;
+	}
+	.slide .title {
+		font-size: 2.7em;
+	}
+}
+@media screen and (min-width: 1080px) {
+	body {
+		font-size: 1.5em;
+	}
+	.slide .title {
+		font-size: 2.8em;
+	}
+}
+@media screen and (min-width: 1920px) {
+	body {
+		font-size: 1.6em;
+	}
+	.slide .title {
+		font-size: 3em;
+	}
+}
+@media screen and (max-height: 640px) {
+	body {
+		font-size: 1.2em;
+	}
+	.slide .title {
+		font-size: 2.6em;
+	}
+	.slide .subtitle {
+		font-size: 1.1em;
+	}
+	.button.note-add {
+		padding: 1em;
+	}
+}
+@media screen and (max-height: 480px) {
 	body {
 		font-size: 1em;
 	}
 	.slide .title {
-		font-size: 2.4em;
+		font-size: 2.5em;
 	}
 	.slide .subtitle {
 		font-size: 1em;
+	}
+	.button.note-add {
+		padding: 1em;
 	}
 }
 
