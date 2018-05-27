@@ -241,6 +241,7 @@ export default new Vuex.Store({
 		},
 		initEvents({state, getters, commit, dispatch}) {
 			window.addEventListener('resize', function(event) {
+				window.elements.dd.reflow();
 				commit('updateDraggerWidth');
 			});
 
@@ -316,10 +317,11 @@ export default new Vuex.Store({
 			commit('addNote', note);
 			commit('toggleStatus', {'isNewNote': true});
 			dispatch('initElements', getters.notesCount);
+			// TODO callback
 			setTimeout(function() {
 				dispatch('toggleNote');
 				dispatch('noteEditHandler', note.id);
-			}, 250);
+			}, 1000);
 		},
 		noteEditHandler({commit}, noteID) {
 			commit('toggleStatus', {'isEditing': true});
@@ -471,12 +473,10 @@ export default new Vuex.Store({
 				'isAnimating': true
 			};
 			if (state.status.isContent) {
-				window.elements.dd.enable();
 				window.elements.dd.bindEventListeners();
 				status['slideIsShow'] = false;
 				status['containerIsFixed'] = false;
 			} else {
-				window.elements.dd.disable();
 				window.elements.dd.unbindEventListeners();
 				status['appIsSwitchShow'] = true;
 				status['slideIsShow'] = true;
