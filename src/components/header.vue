@@ -18,18 +18,21 @@
 							v-if="!status.isEmpty">
 						</button>
 					</div>
-					<div class="button-wrapper note-add-wrapper"
-						v-if="!status.slideIsShow">
-						<p v-if="status.isEmpty">
-							{{ text.emptyMessage }}
-						</p>
-						<button class="button note-add"
-							@click="noteAddHandler">
-							<span>
-								{{ text.emptyButton }}
-							</span>
-						</button>
-					</div>
+					<transition name="v-fade">
+						<div v-if="!status.slideIsShow && !status.draggerButtonIsToggled">
+							<div class="button-wrapper note-add-wrapper">
+								<p v-if="status.isEmpty">
+									{{ text.emptyMessage }}
+								</p>
+								<button class="button note-add"
+									@click="noteAddHandler">
+									<span>
+										{{ text.emptyButton }}
+									</span>
+								</button>
+							</div>
+						</div>
+					</transition>
 				</header>
 			</transition>
 </template>
