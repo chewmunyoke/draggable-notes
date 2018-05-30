@@ -112,3 +112,8 @@ body {
 		}
 	}
 }
+@media screen and (min-width: $lg) {
+	.button-wrapper.note-add-wrapper {
+		top: 120%;
+	}
+}

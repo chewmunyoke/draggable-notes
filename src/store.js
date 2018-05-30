@@ -195,21 +195,23 @@ export default new Vuex.Store({
 				xhr.send();
 				*/
 				let data = JSON.parse(localStorage.getItem(constants.STORAGE_KEY));
-				commit('setUser', data.user);
-				if (data && data.notes.length > 0) {
-					data.notes.forEach(function(note) {
-						commit('addNote', setNote(note));
-					});
-					commit('setCurrentNote', data.notes[0].id);
-				} else {
-					commit('toggleStatus', {'isEmpty': true});
+				if (data) {
+					commit('setUser', data.user);
+					if (data.notes.length > 0) {
+						data.notes.forEach(function(note) {
+							commit('addNote', setNote(note));
+						});
+						commit('setCurrentNote', data.notes[0].id);
+					} else {
+						commit('toggleStatus', {'isEmpty': true});
+					}
+					let status = {
+						'isLoading': false,
+						'isDisplayed': true
+					};
+					commit('toggleStatus', status);
+					resolve();
 				}
-				let status = {
-					'isLoading': false,
-					'isDisplayed': true
-				};
-				commit('toggleStatus', status);
-				resolve();
 			});
 		},
 		initElements({state, getters, commit}, stepIndex) {

@@ -8,6 +8,9 @@
 
  /* Edited by Codrops: 3dtranslate instead of translateX and translateY, removed perspective and backface-visibility hidden*/
 
+
+let debug_dd = false;
+
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
@@ -213,6 +216,7 @@ Dragdealer.prototype = {
     tapping: true
   },
   init: function() {
+	if (debug_dd) console.log('dragdealer.init');
     this.value = {
       prev: [-1, -1],
       current: [this.options.x || 0, this.options.y || 0],
@@ -238,6 +242,7 @@ Dragdealer.prototype = {
     }
   },
   applyDefaults: function(options) {
+	if (debug_dd) console.log('dragdealer.applyDefaults');
     for (var k in this.defaults) {
       if (!options.hasOwnProperty(k)) {
         options[k] = this.defaults[k];
@@ -246,6 +251,7 @@ Dragdealer.prototype = {
     return options;
   },
   getWrapperElement: function(wrapper) {
+	if (debug_dd) console.log('dragdealer.getWrapperElement');
     if (typeof(wrapper) == 'string') {
       return document.getElementById(wrapper);
     } else {
@@ -253,6 +259,7 @@ Dragdealer.prototype = {
     }
   },
   getHandleElement: function(wrapper, handleClass) {
+	if (debug_dd) console.log('dragdealer.getHandleElement');
     var childElements,
         handleClassMatcher,
         i;
@@ -272,6 +279,7 @@ Dragdealer.prototype = {
     }
   },
   calculateStepRatios: function() {
+	if (debug_dd) console.log('dragdealer.calculateStepRatios');
     var stepRatios = [];
     if (this.options.steps > 1) {
       for (var i = 0; i <= this.options.steps - 1; i++) {
@@ -281,9 +289,11 @@ Dragdealer.prototype = {
     return stepRatios;
   },
   setWrapperOffset: function() {
+	if (debug_dd) console.log('dragdealer.setWrapperOffset');
     this.offset.wrapper = Position.get(this.wrapper);
   },
   calculateBounds: function() {
+	if (debug_dd) console.log('dragdealer.calculateBounds');
     // Apply top/bottom/left and right padding options to wrapper extremities
     // when calculating its bounds
     var bounds = {
@@ -300,6 +310,7 @@ Dragdealer.prototype = {
     return bounds;
   },
   calculateValuePrecision: function() {
+	if (debug_dd) console.log('dragdealer.calculateValuePrecision');
     // The sliding transition works by dividing itself until it reaches a min
     // value step; because Dragdealer works with [0-1] values, we need this
     // "min value step" to represent a pixel when applied to the real handle
@@ -314,6 +325,7 @@ Dragdealer.prototype = {
     ];
   },
   bindMethods: function() {
+	if (debug_dd) console.log('dragdealer.bindMethods');
     this.onHandleMouseDown = bind(this.onHandleMouseDown, this);
     this.onHandleTouchStart = bind(this.onHandleTouchStart, this);
     this.onDocumentMouseMove = bind(this.onDocumentMouseMove, this);
@@ -326,6 +338,7 @@ Dragdealer.prototype = {
     this.onWindowResize = bind(this.onWindowResize, this);
   },
   bindEventListeners: function() {
+	if (debug_dd) console.log('dragdealer.bindEventListeners');
     // Start dragging
     addEventListener(this.handle, 'mousedown', this.onHandleMouseDown);
     addEventListener(this.handle, 'touchstart', this.onHandleTouchStart);
@@ -349,6 +362,7 @@ Dragdealer.prototype = {
     this.animate(false, true);
   },
   unbindEventListeners: function() {
+	if (debug_dd) console.log('dragdealer.unbindEventListeners');
     removeEventListener(this.handle, 'mousedown', this.onHandleMouseDown);
     removeEventListener(this.handle, 'touchstart', this.onHandleTouchStart);
     removeEventListener(document, 'mousemove', this.onDocumentMouseMove);
@@ -442,21 +456,25 @@ Dragdealer.prototype = {
     this.handle.className += ' disabled';
   },
   reflow: function() {
+	if (debug_dd) console.log('dragdealer.reflow');
     this.setWrapperOffset();
     this.bounds = this.calculateBounds();
     this.valuePrecision = this.calculateValuePrecision();
     this.updateOffsetFromValue();
   },
   getStep: function() {
+	if (debug_dd) console.log('dragdealer.getStep');
     return [
       this.getStepNumber(this.value.target[0]),
       this.getStepNumber(this.value.target[1])
     ];
   },
   getValue: function() {
+	if (debug_dd) console.log('dragdealer.getValue');
     return this.value.target;
   },
   setStep: function(x, y, snap) {
+	if (debug_dd) console.log('dragdealer.setStep');
     this.setValue(
       this.options.steps && x > 1 ? (x - 1) / (this.options.steps - 1) : 0,
       this.options.steps && y > 1 ? (y - 1) / (this.options.steps - 1) : 0,
@@ -464,6 +482,7 @@ Dragdealer.prototype = {
     );
   },
   setValue: function(x, y, snap) {
+	if (debug_dd) console.log('dragdealer.setValue');
     this.setTargetValue([x, y || 0]);
     if (snap) {
       this.groupCopy(this.value.current, this.value.target);
@@ -586,6 +605,7 @@ Dragdealer.prototype = {
     return true;
   },
   updateOffsetFromValue: function() {
+	if (debug_dd) console.log('dragdealer.updateOffsetFromValue');
     if (!this.options.snap) {
       this.offset.current = this.getOffsetsByRatios(this.value.current);
     } else {
@@ -599,7 +619,7 @@ Dragdealer.prototype = {
     }
   },
   renderHandlePosition: function() {
-
+	if (debug_dd) console.log('dragdealer.renderHandlePosition');
     var transform = '';
     if (this.options.css3 && StylePrefix.transform) {
       if (this.options.horizontal) {
@@ -620,6 +640,7 @@ Dragdealer.prototype = {
     }
   },
   setTargetValue: function(value, loose) {
+	if (debug_dd) console.log('dragdealer.setTargetValue');
     var target = loose ? this.getLooseValue(value) : this.getProperValue(value);
 
     this.groupCopy(this.value.target, target);
@@ -628,6 +649,7 @@ Dragdealer.prototype = {
     this.callTargetCallback();
   },
   setTargetValueByOffset: function(offset, loose) {
+	if (debug_dd) console.log('dragdealer.setTargetValueByOffset');
     var value = this.getRatiosByOffsets(offset);
     var target = loose ? this.getLooseValue(value) : this.getProperValue(value);
 
@@ -635,6 +657,7 @@ Dragdealer.prototype = {
     this.offset.target = this.getOffsetsByRatios(target);
   },
   getLooseValue: function(value) {
+	if (debug_dd) console.log('dragdealer.getLooseValue');
     var proper = this.getProperValue(value);
     return [
       proper[0] + ((value[0] - proper[0]) / 4),
@@ -642,6 +665,7 @@ Dragdealer.prototype = {
     ];
   },
   getProperValue: function(value) {
+	if (debug_dd) console.log('dragdealer.getProperValue');
     var proper = this.groupClone(value);
 
     proper[0] = Math.max(proper[0], 0);
@@ -657,37 +681,44 @@ Dragdealer.prototype = {
     return proper;
   },
   getRatiosByOffsets: function(group) {
+	if (debug_dd) console.log('dragdealer.getRatiosByOffsets');
     return [
       this.getRatioByOffset(group[0], this.bounds.availWidth, this.bounds.left),
       this.getRatioByOffset(group[1], this.bounds.availHeight, this.bounds.top)
     ];
   },
   getRatioByOffset: function(offset, range, padding) {
+	if (debug_dd) console.log('dragdealer.getRatioByOffset');
     return range ? (offset - padding) / range : 0;
   },
   getOffsetsByRatios: function(group) {
-	//console.log(this.bounds);
-	//console.log('x ratio: ' + group[0]);
+	if (debug_dd) console.log('dragdealer.getOffsetsByRatios');
+	//if (debug_dd) console.log(this.bounds);
+	//if (debug_dd) console.log('x ratio: ' + group[0]);
     return [
       this.getOffsetByRatio(group[0], this.bounds.availWidth, this.bounds.left),
       this.getOffsetByRatio(group[1], this.bounds.availHeight, this.bounds.top)
     ];
   },
   getOffsetByRatio: function(ratio, range, padding) {
+	if (debug_dd) console.log('dragdealer.getOffsetByRatio');
     return Math.round(ratio * range) + padding;
   },
   getStepNumber: function(value) {
+	if (debug_dd) console.log('dragdealer.getStepNumber');
     // Translate a [0-1] value into a number from 1 to N steps (set using the
     // "steps" option)
     return this.getClosestStep(value) * (this.options.steps - 1) + 1;
   },
   getClosestSteps: function(group) {
+	if (debug_dd) console.log('dragdealer.getClosestSteps');
     return [
       this.getClosestStep(group[0]),
       this.getClosestStep(group[1])
     ];
   },
   getClosestStep: function(value) {
+	if (debug_dd) console.log('dragdealer.getClosestStep');
     var k = 0;
     var min = 1;
     for (var i = 0; i <= this.options.steps - 1; i++) {

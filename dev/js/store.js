@@ -158,7 +158,7 @@ let store = new Vuex.Store({
 		},
 		fetchData({commit}, credentials) {
 			return new Promise(function(resolve, reject) {
-				
+
 				let xhr = new XMLHttpRequest();
 				xhr.onreadystatechange = function() {
 					if (this.readyState == 4 && this.status == 200) {
@@ -187,26 +187,28 @@ let store = new Vuex.Store({
 				};
 				xhr.open('GET', JSON_DATA, true);
 				xhr.send();
-				
+
 				/*
 				let data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-				commit('setUser', data.user);
-				// TODO HERE
-				//data.notes = [];
-				if (data && data.notes.length > 0) {
-					data.notes.forEach(function(note) {
-						commit('addNote', setNote(note));
-					});
-					commit('setCurrentNote', data.notes[0].id);
-				} else {
-					commit('toggleStatus', {'isEmpty': true});
+				if (data) {
+					commit('setUser', data.user);
+					// TODO HERE
+					//data.notes = [];
+					if (data.notes.length > 0) {
+						data.notes.forEach(function(note) {
+							commit('addNote', setNote(note));
+						});
+						commit('setCurrentNote', data.notes[0].id);
+					} else {
+						commit('toggleStatus', {'isEmpty': true});
+					}
+					let status = {
+						'isLoading': false,
+						'isDisplayed': true
+					};
+					commit('toggleStatus', status);
+					resolve();
 				}
-				let status = {
-					'isLoading': false,
-					'isDisplayed': true
-				};
-				commit('toggleStatus', status);
-				resolve();
 				*/
 			});
 		},

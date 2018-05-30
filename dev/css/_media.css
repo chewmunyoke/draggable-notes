@@ -117,3 +117,8 @@
 		top: 65%;
 	}
 }
+@media screen and (min-width: 1080px) {
+	.note-add-wrapper {
+		top: 120%;
+	}
+}

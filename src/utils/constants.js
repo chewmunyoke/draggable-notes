@@ -21,7 +21,7 @@ export const toolbarOptions = [
 export const state = {
 	// App initial state
 	status: {
-		current: 0,
+		current: '',
 		isLoading: true,
 		isDisplayed: false,
 		isEmpty: false,
@@ -33,7 +33,6 @@ export const state = {
 		appIsSwitchMax: false,
 		appIsSwitchMin: false,
 		appIsSwitchShow: false,
-		appIsShowContent: false,
 		draggerButtonIsToggled: false,
 		draggerIsToggled: false,
 		draggerIsTransforming: false,
@@ -58,10 +57,10 @@ export const state = {
 		emptyButton: 'Create a new note!'
 	},
 	user: {
-		user_id: 0,
-		name: "Test User",
-		username: "test",
-		password: "test"
+		id: '',
+		name: '',
+		username: '',
+		password: ''
 	},
 	notes: []
 };
