@@ -3,10 +3,10 @@ import { STORAGE_KEY } from './utils/constants';
 const localStoragePlugin = store => {
 	const TYPES = ['saveNote', 'deleteNote'];
 	store.subscribe((mutation, state) => {
-		if (TYPES.indexOf(mutation.type) > -1) {
-			const data = {user: state.user, notes: state.notes}
+		if (TYPES.includes(mutation.type)) {
+			const data = {user: state.user, notes: state.notes};
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-			console.log('localStorage updated: ' + mutation.type);
+			console.log(`localStorage updated:  ${mutation.type}`);
 		}
 	});
 };
@@ -54,7 +54,7 @@ function createLogger ({
 					logger.log('—— log end ——')
 				}
 			}
-			
+
 			prevState = nextState
 		})
 	}

@@ -5,7 +5,5 @@ import AppComponent from './components/app.vue';
 new Vue({
 	el: '#app',
 	store,
-	render: function(createElement) {
-		return createElement(AppComponent);
-	}
+	render: (createElement) => createElement(AppComponent)
 });

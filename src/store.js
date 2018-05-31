@@ -16,48 +16,44 @@ export default new Vuex.Store({
 	plugins: debug ? plugins : [],
 	state: constants.state,
 	getters: {
-		notesCount: function(state) {
+		notesCount: state => {
 			return state.notes.length;
 		},
-		noteIndex: function(state) {
-			return function(noteID) {
-				return state.notes.findIndex(function(note) {
-					return note.id == noteID;
-				});
-			}
+		noteIndex: state => noteID => {
+			return state.notes.findIndex(note => note.id === noteID);
 		},
-		zAxis: function(state) {
+		zAxis: state => {
 			return state.status.isFullscreen ?
 				(state.options.perspective - (state.options.perspective / state.options.slideshowRatio)) :
 				(state.options.perspective - (state.options.perspective * state.options.slideshowRatio));
 		},
-		slideIntialWidth: function(state, getters) {
+		slideIntialWidth: (state, getters) => {
 			return (state.options.slideWidthPct / getters.notesCount) + '%';
 		},
-		slideInitialMargin: function(state, getters) {
+		slideInitialMargin: (state, getters) => {
 			return '0 ' + (((state.options.draggerWidthPct - state.options.slideWidthPct) / 2) / getters.notesCount) + '%';
 		},
-		slideContentWidth: function(state, getters) {
+		slideContentWidth: (state, getters) => {
 			return 'calc(' + (state.options.draggerWidthPct / getters.notesCount) + '% - ' + state.options.slideContentMargin + 'px';
 		},
-		slideLeftValue: function(state) {
+		slideLeftValue: state => {
 			return (state.status.draggerWidth * 0.14) + 'px';
 		},
-		draggerToggledWidth: function(state) {
+		draggerToggledWidth: state => {
 			return state.options.slideshowRatio * state.options.draggerWidthPct + '%';
 		},
-		draggerToggledHeight: function(state) {
+		draggerToggledHeight: state => {
 			return state.options.slideshowRatio * state.options.draggerHeightPct + '%';
 		},
-		handleWidth: function(state, getters) {
+		handleWidth: (state, getters) => {
 			return getters.notesCount * state.options.draggerWidthPct + '%';
 		},
-		draggerButtonClass: function(state) {
+		draggerButtonClass: state => {
 			return {
 				'view-max': state.status.draggerButtonIsToggled
-			}
+			};
 		},
-		slideshowClass: function(state) {
+		slideshowClass: state => {
 			return {
 				'switch-max': state.status.appIsSwitchMax,
 				'switch-min': state.status.appIsSwitchMin,
@@ -65,117 +61,111 @@ export default new Vuex.Store({
 				'show-content': state.status.slideIsShow
 			};
 		},
-		draggerClass: function(state) {
+		draggerClass: state => {
 			return {
 				'dragger-large': !state.status.draggerIsToggled,
 				'dragger-small': state.status.draggerIsToggled
 			};
 		},
-		draggerStyle: function(state, getters) {
+		draggerStyle: (state, getters) => {
 			return {
 				// TODO prefix
 				'width': state.status.draggerIsToggled ? getters.draggerToggledWidth : null,
 				'height': state.status.draggerIsToggled ? getters.draggerToggledHeight : null,
 				'transform': state.status.draggerIsTransforming ?
-					'perspective(' + state.options.perspective + 'px) translate3d(0, 0, ' + getters.zAxis + 'px)' :
-					'translate3d(0, 0, 0)'
+					`perspective(${state.options.perspective}px) translate3d(0, 0, ${getters.zAxis}px)` :
+					`translate3d(0, 0, 0)`
 			};
 		},
-		handleStyle: function(state, getters) {
+		handleStyle: (state, getters) => {
 			return {
 				'width': getters.handleWidth
 			};
 		},
-		slideClass: function(state, getters) {
-			return function(noteID) {
-				let index = getters.noteIndex(noteID);
-				let currentIndex = getters.noteIndex(state.status.current);
-				return {
-					'current': index == currentIndex,
-					'previous': index == currentIndex - 1,
-					'next': index == currentIndex + 1,
-					'show': index == currentIndex && state.status.slideIsShow
-				};
+		slideClass: (state, getters) => noteID => {
+			let index = getters.noteIndex(noteID);
+			let currentIndex = getters.noteIndex(state.status.current);
+			return {
+				'current': index === currentIndex,
+				'previous': index === currentIndex - 1,
+				'next': index === currentIndex + 1,
+				'show': index === currentIndex && state.status.slideIsShow
 			};
 		},
-		slideStyle: function(state, getters) {
-			return function(noteID) {
-				let index = getters.noteIndex(noteID);
-				let currentIndex = getters.noteIndex(state.status.current);
-				let left = null;
-				if (!state.status.appIsSwitchMin && !state.status.appIsSwitchShow && !state.status.draggerIsToggled) {
-					if (index == currentIndex - 1) {
-						left = getters.slideLeftValue;
-					} else if (index == currentIndex + 1) {
-						left = '-' + getters.slideLeftValue;
-					}
+		slideStyle: (state, getters) => noteID => {
+			let index = getters.noteIndex(noteID);
+			let currentIndex = getters.noteIndex(state.status.current);
+			let left = null;
+			if (!state.status.appIsSwitchMin && !state.status.appIsSwitchShow && !state.status.draggerIsToggled) {
+				if (index === currentIndex - 1) {
+					left = getters.slideLeftValue;
+				} else if (index === currentIndex + 1) {
+					left = `-${getters.slideLeftValue}`;
 				}
-				return {
-					'left': left,
-					'width': noteID == state.status.current && state.status.slideIsShow ? getters.slideContentWidth : getters.slideIntialWidth,
-					'margin': noteID == state.status.current && state.status.slideIsShow ? null : getters.slideInitialMargin,
-					'transform-style': state.status.preserve3dSlides ? 'preserve-3d' : null
-				};
+			}
+			return {
+				'left': left,
+				'width': noteID === state.status.current && state.status.slideIsShow ? getters.slideContentWidth : getters.slideIntialWidth,
+				'margin': noteID === state.status.current && state.status.slideIsShow ? null : getters.slideInitialMargin,
+				'transform-style': state.status.preserve3dSlides ? 'preserve-3d' : null
 			};
 		},
-		containerStyle: function(state, getters) {
-			return function(noteID) {
-				return {
-					'position': noteID == state.status.current && state.status.containerIsFixed ? 'fixed' : null,
-					'width': noteID == state.status.current && state.status.containerIsFixed ? getters.slideContentWidth : null
-				};
+		containerStyle: (state, getters) => noteID => {
+			return {
+				'position': noteID === state.status.current && state.status.containerIsFixed ? 'fixed' : null,
+				'width': noteID === state.status.current && state.status.containerIsFixed ? getters.slideContentWidth : null
 			};
 		}
 	},
 	mutations: {
-		setUser(state, user) {
+		setUser (state, user) {
 			for (let key in user) {
 				//Vue.set(state.user, key, user[key]);
 				state.user[key] = user[key];
 			}
-			state.text.appMessage = 'Welcome, ' + user.name;
+			state.text.appMessage = `Welcome, ${user.name}`;
 		},
-		setCurrentNote(state, noteID) {
+		setCurrentNote (state, noteID) {
 			state.status.current = noteID;
 		},
-		addNote(state, note) {
+		addNote (state, note) {
 			state.notes.push(note);
 		},
-		saveNote(state, note) {
+		saveNote (state, note) {
 			let index = this.getters.noteIndex(note.id);
 			for (let key in note) {
 				state.notes[index][key] = note[key];
 			}
 		},
-		deleteNote(state, noteID) {
+		deleteNote (state, noteID) {
 			let index = this.getters.noteIndex(noteID);
 			state.notes.splice(index, 1);
 			window.elements.slides.splice(index, 1);
 		},
-		toggleStatus(state, params) {
+		toggleStatus (state, params) {
 			for (let key in params) {
 				state.status[key] = params[key];
 			}
 		},
-		updateDraggerWidth(state) {
+		updateDraggerWidth (state) {
 			state.status.draggerWidth = window.elements.dragger.offsetWidth;
 		}
 	},
 	actions: {
-		login({state, commit}, credentials) {
+		login ({state, commit}, credentials) {
 
 		},
-		fetchData({commit}, credentials) {
-			return new Promise(function(resolve, reject) {
+		fetchData ({commit}, credentials) {
+			return new Promise((resolve, reject) => {
 				/*
 				let xhr = new XMLHttpRequest();
-				xhr.onreadystatechange = function() {
+				xhr.onreadystatechange = function () {
 					if (this.readyState == 4 && this.status == 200) {
 						let newData = JSON.parse(this.responseText);
-						setTimeout(function() {
+						setTimeout(() => {
 							commit('setUser', newData.user);
 							if (newData.notes.length > 0) {
-								newData.notes.forEach(function(note) {
+								newData.notes.forEach(note => {
 									commit('addNote', setNote(note));
 								});
 								commit('setCurrentNote', newData.notes[0].id);
@@ -198,7 +188,7 @@ export default new Vuex.Store({
 				if (data) {
 					commit('setUser', data.user);
 					if (data.notes.length > 0) {
-						data.notes.forEach(function(note) {
+						data.notes.forEach(note => {
 							commit('addNote', setNote(note));
 						});
 						commit('setCurrentNote', data.notes[0].id);
@@ -214,8 +204,8 @@ export default new Vuex.Store({
 				}
 			});
 		},
-		initElements({state, getters, commit}, stepIndex) {
-			Vue.nextTick().then(function() {
+		initElements ({state, getters, commit}, stepIndex) {
+			Vue.nextTick().then(() => {
 				window.elements.slides = [].slice.call(window.elements.handle.children);
 				if (window.elements.dd) {
 					window.elements.dd.unbindEventListeners();
@@ -228,7 +218,7 @@ export default new Vuex.Store({
 						steps: getters.notesCount,
 						speed: 0.3,
 						loose: true,
-						callback: function(x, y) {
+						callback: function (x, y) {
 							let index = this.getStep()[0] - 1;
 							if (isNaN(index)) index = 0;
 							commit('setCurrentNote', state.notes[index].id);
@@ -241,13 +231,13 @@ export default new Vuex.Store({
 				}
 			});
 		},
-		initEvents({state, getters, commit, dispatch}) {
-			window.addEventListener('resize', function(event) {
+		initEvents ({state, getters, commit, dispatch}) {
+			window.addEventListener('resize', event => {
 				window.elements.dd.reflow();
 				commit('updateDraggerWidth');
 			});
 
-			document.addEventListener('mousewheel', function(event) {
+			document.addEventListener('mousewheel', event => {
 				if (!state.status.isEmpty && !state.status.isContent) {
 					let index = getters.noteIndex(state.status.current);
 					if (event.deltaY < 0) {
@@ -260,9 +250,10 @@ export default new Vuex.Store({
 				}
 			});
 
-			document.addEventListener('keydown', function(event) {
+			document.addEventListener('keydown', event => {
 				if (!state.status.isEmpty) {
 					let keyCode = event.keyCode || event.which;
+					let currentSlide = window.elements.slides[getters.noteIndex(state.status.current)];
 					if (state.status.isContent && !state.status.isEditing) {
 						switch (keyCode) {
 							case 38: // Up arrow key
@@ -292,10 +283,10 @@ export default new Vuex.Store({
 				}
 			});
 		},
-		draggerClickHandler({dispatch}) {
+		draggerClickHandler ({dispatch}) {
 			dispatch('toggleScreen');
 		},
-		slideClickHandler({state, getters, dispatch}, noteID) {
+		slideClickHandler ({state, getters, dispatch}, noteID) {
 			if (!state.status.isFullscreen && !state.status.isAnimating && !window.elements.dd.activity) {
 				if (noteID === state.status.current) {
 					dispatch('toggleScreen');
@@ -305,12 +296,12 @@ export default new Vuex.Store({
 				}
 			}
 		},
-		noteToggleHandler({dispatch}) {
+		noteToggleHandler ({dispatch}) {
 			dispatch('toggleNote');
 		},
-		noteAddHandler({state, getters, commit, dispatch}) {
+		noteAddHandler ({state, getters, commit, dispatch}) {
 			// TODO temporary note ID generator
-			let newID = state.user.id + '_note_' + (getters.notesCount + 1);
+			let newID = `${state.user.id}_note_${getters.notesCount + 1}`;
 			let note = {
 				id: newID,
 				title: '',
@@ -320,15 +311,15 @@ export default new Vuex.Store({
 			commit('toggleStatus', {'isNewNote': true});
 			dispatch('initElements', getters.notesCount);
 			// TODO callback
-			setTimeout(function() {
+			setTimeout(() => {
 				dispatch('toggleNote');
 				dispatch('noteEditHandler', note.id);
 			}, 1000);
 		},
-		noteEditHandler({commit}, noteID) {
+		noteEditHandler ({commit}, noteID) {
 			commit('toggleStatus', {'isEditing': true});
-			Vue.nextTick(function() {
-				window.elements.editor = new Quill('#content-' + noteID, {
+			Vue.nextTick(() => {
+				window.elements.editor = new Quill(`#content-${noteID}`, {
 					theme: 'snow',
 					placeholder: 'Note Content',
 					modules: {
@@ -337,7 +328,7 @@ export default new Vuex.Store({
 				});
 			});
 		},
-		noteDeleteHandler({getters, commit, dispatch}, noteID) {
+		noteDeleteHandler ({getters, commit, dispatch}, noteID) {
 			commit('toggleStatus', {'isLoading': true});
 			dispatch('toggleNote');
 
@@ -356,38 +347,38 @@ export default new Vuex.Store({
 			commit('deleteNote', noteID);
 			dispatch('initElements', stepIndex);
 			// TODO temporary
-			setTimeout(function() {
+			setTimeout(() => {
 				commit('toggleStatus', {'isLoading': false});
 			}, 1000);
 		},
-		noteSaveHandler({state, getters, commit}, note) {
+		noteSaveHandler ({state, getters, commit}, note) {
 			// If there are changes, save
 			// Else, cancel
 			let index = getters.noteIndex(note.id);
-			if (note.title != state.notes[index].title
-				|| note.content != state.notes[index].content) {
+			if (note.title !== state.notes[index].title ||
+				note.content !== state.notes[index].content) {
 				note.timestamp = moment().valueOf();
 				commit('toggleStatus', {'isLoading': true});
 				commit('saveNote', setNote(note));
 			}
 			// TODO temporary
-			setTimeout(function() {
+			setTimeout(() => {
 				let status = {
 					'isEditing': false,
 					'isLoading': false
-				}
+				};
 				commit('toggleStatus', status);
 			}, 1000);
 		},
-		noteCancelHandler({state, getters, commit, dispatch}, note) {
+		noteCancelHandler ({state, getters, commit, dispatch}, note) {
 			// If there are changes, ask for confirmation
 			// Else, cancel
 			let index = getters.noteIndex(note.id);
 			let response = true;
-			if (note.title != state.notes[index].title
-				|| note.content != state.notes[index].content) {
+			if (note.title !== state.notes[index].title ||
+				note.content !== state.notes[index].content) {
 				note.timestamp = moment().valueOf();
-				response = confirm('Are you sure you want to discard changes?');
+				response = confirm(`Are you sure you want to discard changes?`);
 			}
 			if (response) {
 				commit('toggleStatus', {'isEditing': false});
@@ -400,7 +391,7 @@ export default new Vuex.Store({
 		/**
 		 * Function to toggle between fullscreen and minimized slideshow
 		 */
-		toggleScreen({state, commit, dispatch}) {
+		toggleScreen ({state, commit, dispatch}) {
 			if (state.status.isAnimating) return false;
 
 			// Callback
@@ -421,7 +412,7 @@ export default new Vuex.Store({
 			}
 			commit('toggleStatus', status);
 
-			let onEndTransitionFn = function(event) {
+			let onEndTransitionFn = function (event) {
 				if (constants.support.transitions) {
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.dragger) return;
 					this.removeEventListener(constants.transEndEventName, onEndTransitionFn);
@@ -435,7 +426,7 @@ export default new Vuex.Store({
 				onEndTransitionFn();
 			}
 		},
-		toggleScreenEnd({state, commit}) {
+		toggleScreenEnd ({state, commit}) {
 			let status = {
 				'isAnimating': false,
 				'isFullscreen': !state.status.isFullscreen,
@@ -453,7 +444,7 @@ export default new Vuex.Store({
 			commit('toggleStatus', status);
 
 			// To be executed after the DOM is updated with the computed class changes
-			Vue.nextTick().then(function() {
+			Vue.nextTick().then(() => {
 				// Reinstatiate the dragger with the "reflow" method
 				window.elements.dd.reflow();
 				commit('updateDraggerWidth');
@@ -462,13 +453,13 @@ export default new Vuex.Store({
 		/**
 		 * Function to show/hide slide content
 		 */
-		toggleNote({state, commit, dispatch}) {
+		toggleNote ({state, commit, dispatch}) {
 			if (state.status.isAnimating) return false;
 
 			// Callback
 			// state.options.ontoggleNote();
 
-			let slide = document.querySelector('#slide-' + state.status.current);
+			let slide = document.querySelector(`#slide-${state.status.current}`);
 			slide.scrollTop = 0;
 
 			let status = {
@@ -485,7 +476,7 @@ export default new Vuex.Store({
 			}
 			commit('toggleStatus', status);
 
-			let onEndTransitionFn = function(event) {
+			let onEndTransitionFn = function (event) {
 				if (constants.support.transitions) {
 					if (event.propertyName.indexOf('transform') === -1 || event.target !== window.elements.slideshow) return;
 					this.removeEventListener(constants.transEndEventName, onEndTransitionFn);
@@ -499,7 +490,7 @@ export default new Vuex.Store({
 				onEndTransitionFn();
 			}
 		},
-		toggleNoteEnd({state, commit}) {
+		toggleNoteEnd ({state, commit}) {
 			let status = {
 				'isAnimating': false,
 				'isContent': !state.status.isContent

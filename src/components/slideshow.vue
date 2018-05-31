@@ -22,9 +22,9 @@
 									{{ note.title || "Untitled" }}
 								</span>
 								<span class="subtitle">
-									Last Updated: 
+									Last Updated:
 								</span>
-								<span class="timestamp" 
+								<span class="timestamp"
 									:title="note.datestamp">
 									{{ note.lastUpdated }}
 								</span>
@@ -120,7 +120,7 @@
 				}
 			},
 			noteSaveHandler: function(noteID) {
-				let newTitle = document.querySelector('#title-' + noteID).value;
+				let newTitle = document.querySelector(`#title-${noteID}`).value;
 				let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
 				let note = {
 					id: noteID,
@@ -130,7 +130,7 @@
 				this.$store.dispatch('noteSaveHandler', note);
 			},
 			noteCancelHandler: function(noteID) {
-				let newTitle = document.querySelector('#title-' + noteID).value;
+				let newTitle = document.querySelector(`#title-${noteID}`).value;
 				let newContent = window.elements.editor.container.querySelector('.ql-editor').innerHTML;
 				let note = {
 					id: noteID,

@@ -1,0 +1,12 @@
+{
+  "extends": "standard",
+  "rules": {
+    "indent": [1, "tab", { "SwitchCase": 1 }],
+    "no-undef": 1,
+    "no-unused-vars": 1,
+    "no-tabs": 0,
+    "operator-linebreak": [1, "after"],
+    "semi": [1, "always"],
+    "spaced-comment": 0
+  }
+}
