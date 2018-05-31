@@ -307,6 +307,12 @@ let store = new Vuex.Store({
 			dispatch('toggleNote');
 		},
 		noteAddHandler ({state, getters, commit, dispatch}) {
+			let status = {
+				'isLoading': true,
+				'isNewNote': true
+			};
+			commit('toggleStatus', status);
+
 			// TODO temporary note ID generator
 			let newID = state.user.id + '_note_' + (getters.notesCount + 1);
 			let note = {
@@ -315,12 +321,12 @@ let store = new Vuex.Store({
 				content: '<p><br></p>'
 			};
 			commit('addNote', note);
-			commit('toggleStatus', {'isNewNote': true});
 			dispatch('initElements', getters.notesCount);
 			// TODO callback
 			setTimeout(function () {
 				dispatch('toggleNote');
 				dispatch('noteEditHandler', note.id);
+				commit('toggleStatus', {'isLoading': false});
 			}, 1000);
 		},
 		noteEditHandler ({commit}, noteID) {

@@ -1,10 +1,12 @@
 {
   "extends": "standard",
   "rules": {
+    "eol-last": 1,
     "indent": [1, "tab", { "SwitchCase": 1 }],
+    "no-new": 0,
+    "no-tabs": 0,
     "no-undef": 1,
     "no-unused-vars": 1,
-    "no-tabs": 0,
     "operator-linebreak": [1, "after"],
     "semi": [1, "always"],
     "spaced-comment": 0

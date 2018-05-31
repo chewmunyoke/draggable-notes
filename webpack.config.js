@@ -10,9 +10,6 @@ module.exports = {
 	mode: 'development',
 	module: {
 		rules: [{
-			test: /\.(eot|svg|otf|ttf|woff|woff2|jpe?g|png|gif)$/,
-			loader: 'file-loader'
-		}, {
 			test: /\.scss$/,
 			use: [{
 				loader: 'file-loader',
@@ -42,10 +39,19 @@ module.exports = {
 			test: /\.vue$/,
 			loader: 'vue-loader'
 		}, {
-			test: /\.js$/,
-			exclude: /(node_modules|bowel_components)/,
-			loader: 'babel-loader',
+			test: /\.jsx?$/,
+			exclude: /node_modules/,
+			loader: 'babel-loader'
+		}, {
+			test: /\.(eot|svg|otf|ttf|woff|woff2|jpe?g|png|gif)$/,
+			loader: 'file-loader'
 		}]
+	},
+	resolve: {
+		extensions: ['.ts', '.js', '.vue', '.json'],
+		alias: {
+			'vue$': 'vue/dist/vue.esm.js'
+		}
 	},
 	plugins: [
 		new CleanWebpackPlugin(['build'])
