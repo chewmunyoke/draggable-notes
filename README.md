@@ -1,6 +1,6 @@
 # Draggable Notes
 
-A horizontal scrolling notes web app available in a big or small carousel. Easy navigation: just scroll up/down in your web browser, or drag left/right in your mobile browser. Click/tap on the arrow button at the bottom of each note to maximize the note and reveal more of its contents; click/tap again to minimize it.
+A horizontal scrolling notes web app available in a big or small carousel. Easy navigation: just scroll up/down in your web browser, or swipe left/right in your mobile browser. Click/tap on the arrow button at the bottom of each note to maximize the note and reveal more of its contents; click/tap again to minimize it.
 
 **Demo:** [https://chewmunyoke.github.io/draggable-notes/](https://chewmunyoke.github.io/draggable-notes/)
 
@@ -8,7 +8,7 @@ A horizontal scrolling notes web app available in a big or small carousel. Easy 
 
 ## Navigation in web browser
 
-- Dragging
+- Dragging / Swiping
 	- Click/tap and hold **left/right** to navigate to previous/next note.
 - Mousewheel scrolling
 	- Scroll **up/down** to navigate to previous/next note.
@@ -51,7 +51,7 @@ npm run build
 ## Credits
 
 * Design inspired by [iPhone X Todo App Concept](https://www.uplabs.com/posts/iphone-x-todo-concept) by Jae-seong, Jeong
-* Code based on a [Codrops Article](http://tympanus.net/codrops/?p=19332) by Mary Lou
-* [Dragdealer.js v0.9.7](http://github.com/skidding/dragdealer) plugin by Ovidiu Cherecheș
+* Code based on a [Codrops Article](https://tympanus.net/codrops/?p=19332) by Mary Lou
+* [Dragdealer.js v0.9.7](https://github.com/skidding/dragdealer) plugin by Ovidiu Cherecheș
 
 Created and maintained by [Angeline Chew](https://github.com/chewmunyoke) under the [MIT license](https://github.com/chewmunyoke/draggable-notes/blob/master/LICENSE).
