@@ -88,7 +88,9 @@ export const initElements = ({state, getters, commit}, stepIndex) => {
 
 export const initEvents = ({state, getters, commit, dispatch}) => {
 	window.addEventListener('resize', event => {
-		window.elements.dd.reflow();
+		if (window.elements.dd) {
+			window.elements.dd.reflow();
+		}
 		commit('updateDraggerWidth');
 	});
 
@@ -220,13 +222,13 @@ export const noteDeleteHandler = ({getters, commit, dispatch}, noteID) => {
 };
 
 export const noteSaveHandler = ({state, getters, commit}, note) => {
+	commit('toggleStatus', {'isLoading': true});
 	// If there are changes, save
 	// Else, cancel
 	let index = getters.noteIndex(note.id);
 	if (note.title !== state.notes[index].title ||
 		note.content !== state.notes[index].content) {
 		note.timestamp = moment().valueOf();
-		commit('toggleStatus', {'isLoading': true});
 		commit('saveNote', setNote(note));
 	}
 	// TODO temporary
