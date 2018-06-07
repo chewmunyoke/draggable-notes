@@ -48,13 +48,15 @@ export const fetchData = ({commit}, credentials) => {
 			} else {
 				commit('toggleStatus', {'isEmpty': true});
 			}
-			let status = {
-				'isLoading': false,
-				'isDisplayed': true
-			};
-			commit('toggleStatus', status);
-			resolve();
+		} else {
+			commit('toggleStatus', {'isEmpty': true});
 		}
+		let status = {
+			'isLoading': false,
+			'isDisplayed': true
+		};
+		commit('toggleStatus', status);
+		resolve();
 	});
 };
 

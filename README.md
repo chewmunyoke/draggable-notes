@@ -23,17 +23,22 @@ A horizontal scrolling notes web app available in a big or small carousel. Easy 
 
 ## Installation
 
-```
-# navigate to project's directory
-cd /path/to/project/folder/
-
-# install dependencies
-npm install
-# or: yarn
-
-# build web app
-npm run build
-```
+1. Extract project zip file and navigate to project's directory
+   ```
+   cd /path/to/project/folder/
+   ```
+2. Install dependencies using [npm](https://www.npmjs.com/)
+   ```
+   npm install
+   ```
+3. Build app
+   ```
+   npm run build
+   ```
+4. Deploy app to http://localhost:8080/ and launch app
+   ```
+   npm run start
+   ```
 
 ## Task list
 

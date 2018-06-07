@@ -191,23 +191,23 @@ let store = new Vuex.Store({
 				let data = JSON.parse(localStorage.getItem(STORAGE_KEY));
 				if (data) {
 					commit('setUser', data.user);
-					// TODO HERE
-					//data.notes = [];
 					if (data.notes.length > 0) {
-						data.notes.forEach(function (note) {
+						data.notes.forEach(note => {
 							commit('addNote', setNote(note));
 						});
 						commit('setCurrentNote', data.notes[0].id);
 					} else {
 						commit('toggleStatus', {'isEmpty': true});
 					}
-					let status = {
-						'isLoading': false,
-						'isDisplayed': true
-					};
-					commit('toggleStatus', status);
-					resolve();
+				} else {
+					commit('toggleStatus', {'isEmpty': true});
 				}
+				let status = {
+					'isLoading': false,
+					'isDisplayed': true
+				};
+				commit('toggleStatus', status);
+				resolve();
 				*/
 			});
 		},

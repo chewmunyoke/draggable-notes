@@ -8,6 +8,7 @@ module.exports = {
 		path: path.resolve(__dirname, 'build')
 	},
 	mode: 'development',
+	watch: true,
 	module: {
 		rules: [{
 			test: /\.scss$/,
@@ -41,13 +42,13 @@ module.exports = {
 		/*}, {
 			test: /\.tsx?$/,
 			loader: 'ts-loader',
-			exclude: /node_modules/,
+			exclude: /(node_modules|bower_components)/,
 			options: {
 				appendTsSuffixTo: [/\.vue$/]
 			}*/
 		}, {
 			test: /\.jsx?$/,
-			exclude: /node_modules/,
+			exclude: /(node_modules|bower_components)/,
 			loader: 'babel-loader'
 		}, {
 			test: /\.(eot|svg|otf|ttf|woff|woff2|jpe?g|png|gif)$/,
