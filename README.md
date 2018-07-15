@@ -2,11 +2,11 @@
 
 A horizontal scrolling notes web app available in a big or small carousel. Easy navigation: just scroll up/down in your web browser, or swipe left/right in your mobile browser. Click/tap on the arrow button at the bottom of each note to maximize the note and reveal more of its contents; click/tap again to minimize it.
 
-**Demo:** [https://chewmunyoke.github.io/draggable-notes/](https://chewmunyoke.github.io/draggable-notes/)
+**Demo:** https://chewmunyoke.github.io/draggable-notes/
 
 **Note:** This experimental project is made for demonstration purpose only and not intended for production.
 
-## Navigation in web browser
+## Navigation in Web Browser
 
 - Dragging / Swiping
 	- Click/tap and hold **left/right** to navigate to previous/next note.
@@ -23,31 +23,40 @@ A horizontal scrolling notes web app available in a big or small carousel. Easy 
 
 ## Installation
 
-1. Extract project zip file and navigate to project's directory
+1. Clone the repository, or download and extract the repository zip file and navigate to its directory
    ```
    cd /path/to/project/folder/
    ```
-2. Install dependencies using [npm](https://www.npmjs.com/)
+2. Install dependencies using [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/lang/en/)
    ```
    npm install
    ```
-3. Build app
-   ```
-   npm run build
-   ```
-4. Deploy app to http://localhost:8080/ and launch app
+3. Deploy the web application to the development server http://localhost:8080/
    ```
    npm run start
    ```
+4. Build a production-ready web application in /dist
+   ```
+   npm run build
+   ```
 
-## Task list
+## Technology Stack
+
+- [Vue](https://vuejs.org/)
+- [Vuex](https://vuex.vuejs.org/)
+- [Webpack](https://webpack.js.org/)
+- [Babel](https://babeljs.io/)
+- [ESLint](https://eslint.org/)
+- [Sass](https://sass-lang.com/)
+
+## Task List
 
 - [x] Convert mockup to code
 - [x] CRUD functions of notes
 - [x] WYSIWYG editor
 - [ ] Database
 - [ ] User login
-- [ ] Linters
+- [x] Linters
 - [ ] Testing
 - [ ] Search
 - [ ] Additional features (to-do, reminder)
