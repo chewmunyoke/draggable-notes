@@ -1,9 +1,9 @@
 <template>
-	<section class="app" v-cloak>
+	<main class="app" v-cloak>
 		<header-component />
 		<slideshow-component />
 		<preloader-component />
-	</section>
+	</main>
 </template>
 
 <script>

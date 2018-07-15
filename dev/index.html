@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Draggable Notes</title>
-		<meta name="description" content="Draggable Notes" />
-		<meta name="author" content="Angeline" />
-		<!--link rel="shortcut icon" href="../favicon.ico"-->
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<script src="js/modernizr.custom.js"></script>
 	</head>
@@ -81,9 +78,9 @@
 											{{ note.title || "Untitled" }}
 										</span>
 										<span class="subtitle">
-											Last Updated: 
+											Last Updated:
 										</span>
-										<span class="timestamp" 
+										<span class="timestamp"
 											:title="note.datestamp">
 											{{ note.lastUpdated }}
 										</span>
@@ -146,7 +143,7 @@
 
 		<template id="preloader-component">
 			<transition name="v-overlay">
-				<div class="overlay" 
+				<div class="overlay"
 					v-show="status.isLoading">
 					<div class="preloader">
 						<div>

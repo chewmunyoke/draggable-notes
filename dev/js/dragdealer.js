@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /**
  * Dragdealer.js 0.9.7
  * http://github.com/skidding/dragdealer
@@ -326,12 +328,10 @@ Dragdealer.prototype = {
   },
   bindMethods: function() {
 	if (debug_dd) console.log('dragdealer.bindMethods');
-    this.onHandleMouseDown = bind(this.onHandleMouseDown, this);
-    this.onHandleTouchStart = bind(this.onHandleTouchStart, this);
+    this.onHandleMouseDownTouchStart = bind(this.onHandleMouseDownTouchStart, this);
     this.onDocumentMouseMove = bind(this.onDocumentMouseMove, this);
     this.onWrapperTouchMove = bind(this.onWrapperTouchMove, this);
-    this.onWrapperMouseDown = bind(this.onWrapperMouseDown, this);
-    this.onWrapperTouchStart = bind(this.onWrapperTouchStart, this);
+    this.onWrapperMouseDownTouchStart = bind(this.onWrapperMouseDownTouchStart, this);
     this.onDocumentMouseUp = bind(this.onDocumentMouseUp, this);
     this.onDocumentTouchEnd = bind(this.onDocumentTouchEnd, this);
     this.onHandleClick = bind(this.onHandleClick, this);
@@ -340,14 +340,14 @@ Dragdealer.prototype = {
   bindEventListeners: function() {
 	if (debug_dd) console.log('dragdealer.bindEventListeners');
     // Start dragging
-    addEventListener(this.handle, 'mousedown', this.onHandleMouseDown);
-    addEventListener(this.handle, 'touchstart', this.onHandleTouchStart);
+    addEventListener(this.handle, 'mousedown', this.onHandleMouseDownTouchStart);
+    addEventListener(this.handle, 'touchstart', this.onHandleMouseDownTouchStart);
     // While dragging
     addEventListener(document, 'mousemove', this.onDocumentMouseMove);
     addEventListener(this.wrapper, 'touchmove', this.onWrapperTouchMove);
     // Start tapping
-    addEventListener(this.wrapper, 'mousedown', this.onWrapperMouseDown);
-    addEventListener(this.wrapper, 'touchstart', this.onWrapperTouchStart);
+    addEventListener(this.wrapper, 'mousedown', this.onWrapperMouseDownTouchStart);
+    addEventListener(this.wrapper, 'touchstart', this.onWrapperMouseDownTouchStart);
     // Stop dragging/tapping
     addEventListener(document, 'mouseup', this.onDocumentMouseUp);
     addEventListener(document, 'touchend', this.onDocumentTouchEnd);
@@ -363,12 +363,12 @@ Dragdealer.prototype = {
   },
   unbindEventListeners: function() {
 	if (debug_dd) console.log('dragdealer.unbindEventListeners');
-    removeEventListener(this.handle, 'mousedown', this.onHandleMouseDown);
-    removeEventListener(this.handle, 'touchstart', this.onHandleTouchStart);
+    removeEventListener(this.handle, 'mousedown', this.onHandleMouseDownTouchStart);
+    removeEventListener(this.handle, 'touchstart', this.onHandleMouseDownTouchStart);
     removeEventListener(document, 'mousemove', this.onDocumentMouseMove);
     removeEventListener(this.wrapper, 'touchmove', this.onWrapperTouchMove);
-    removeEventListener(this.wrapper, 'mousedown', this.onWrapperMouseDown);
-    removeEventListener(this.wrapper, 'touchstart', this.onWrapperTouchStart);
+    removeEventListener(this.wrapper, 'mousedown', this.onWrapperMouseDownTouchStart);
+    removeEventListener(this.wrapper, 'touchstart', this.onWrapperMouseDownTouchStart);
     removeEventListener(document, 'mouseup', this.onDocumentMouseUp);
     removeEventListener(document, 'touchend', this.onDocumentTouchEnd);
     removeEventListener(this.handle, 'click', this.onHandleClick);
@@ -376,35 +376,37 @@ Dragdealer.prototype = {
 
     clearInterval(this.interval);
   },
-  onHandleMouseDown: function(e) {
-    Cursor.refresh(e);
-    preventEventDefaults(e);
-    stopEventPropagation(e);
-    this.activity = false;
-    this.startDrag();
-  },
-  onHandleTouchStart: function(e) {
+  onHandleMouseDownTouchStart: function(e) {
+    console.log('onHandleMouseDownTouchStart');
     Cursor.refresh(e);
     // Unlike in the `mousedown` event handler, we don't prevent defaults here,
     // because this would disable the dragging altogether. Instead, we prevent
     // it in the `touchmove` handler. Read more about touch events
     // https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Touch_events#Handling_clicks
+    if (e.type === 'mousedown') {
+      preventEventDefaults(e);
+    }
     stopEventPropagation(e);
     this.activity = false;
     this.startDrag();
   },
   onDocumentMouseMove: function(e) {
+    if (e.target.tagName == 'BUTTON') return;
+    console.log('onDocumentMouseMove');
     Cursor.refresh(e);
     if (this.dragging) {
       this.activity = true;
     }
   },
   onWrapperTouchMove: function(e) {
+    if (e.target.tagName == 'BUTTON') return;
+    console.log('onWrapperTouchMove');
     Cursor.refresh(e);
     // Dragging on a disabled axis (horizontal or vertical) shouldn't prevent
     // defaults on touch devices. !this.activity denotes this is the first move
     // inside a drag action; you can drag in any direction after this point if
     // the dragging wasn't stopped
+    console.log(this.draggingOnDisabledAxis());
     if (!this.activity && this.draggingOnDisabledAxis()) {
       if (this.dragging) {
         this.stopDrag();
@@ -416,25 +418,24 @@ Dragdealer.prototype = {
     preventEventDefaults(e);
     this.activity = true;
   },
-  onWrapperMouseDown: function(e) {
-    Cursor.refresh(e);
-    preventEventDefaults(e);
-    this.startTap();
-  },
-  onWrapperTouchStart: function(e) {
+  onWrapperMouseDownTouchStart: function(e) {
+    console.log('onWrapperMouseDownTouchStart');
     Cursor.refresh(e);
     preventEventDefaults(e);
     this.startTap();
   },
   onDocumentMouseUp: function(e) {
+    console.log('onDocumentMouseUp');
     this.stopDrag();
     this.stopTap();
   },
   onDocumentTouchEnd: function(e) {
+    console.log('onDocumentTouchEnd');
     this.stopDrag();
     this.stopTap();
   },
   onHandleClick: function(e) {
+    console.log('onHandleClick');
     // We keep track if any dragging activity has been made between the
     // mouse/touch down and up events; based on this we allow or cancel a click
     // event from inside the handle. i.e. Click events shouldn't be triggered
@@ -482,7 +483,7 @@ Dragdealer.prototype = {
     );
   },
   setValue: function(x, y, snap) {
-	if (debug_dd) console.log('dragdealer.setValue');
+  if (debug_dd) console.log('dragdealer.setValue');
     this.setTargetValue([x, y || 0]);
     if (snap) {
       this.groupCopy(this.value.current, this.value.target);
@@ -494,6 +495,7 @@ Dragdealer.prototype = {
     }
   },
   startTap: function() {
+    console.log('startTap');
     if (this.disabled || !this.options.tapping) {
       return;
     }
@@ -507,6 +509,7 @@ Dragdealer.prototype = {
     ]);
   },
   stopTap: function() {
+    console.log('stopTap');
     if (this.disabled || !this.tapping) {
       return;
     }
@@ -515,6 +518,7 @@ Dragdealer.prototype = {
     this.setTargetValue(this.value.current);
   },
   startDrag: function() {
+    console.log('startDrag');
     if (this.disabled) {
       return;
     }
@@ -530,6 +534,7 @@ Dragdealer.prototype = {
     }
   },
   stopDrag: function() {
+    console.log('stopDrag');
     if (this.disabled || !this.dragging) {
       return;
     }
@@ -593,6 +598,7 @@ Dragdealer.prototype = {
       this.value.target[1] - this.value.current[1]
     ];
     if (!diff[0] && !diff[1]) {
+      //console.log('glide false');
       return false;
     }
     if (Math.abs(diff[0]) > this.valuePrecision[0] ||
@@ -602,6 +608,7 @@ Dragdealer.prototype = {
     } else {
       this.groupCopy(this.value.current, this.value.target);
     }
+    //console.log('glide true');
     return true;
   },
   updateOffsetFromValue: function() {
@@ -740,6 +747,7 @@ Dragdealer.prototype = {
     return [a[0], a[1]];
   },
   draggingOnDisabledAxis: function() {
+    console.log('draggingOnDisabledAxis');
     return (!this.options.horizontal && Cursor.xDiff > Cursor.yDiff) ||
            (!this.options.vertical && Cursor.yDiff > Cursor.xDiff);
   }

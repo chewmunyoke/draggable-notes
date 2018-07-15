@@ -5,8 +5,8 @@ const transEndEventNames = {
 	'msTransition': 'MSTransitionEnd',
 	'transition': 'transitionend'
 };
-export const transEndEventName = transEndEventNames[Modernizr.prefixed('transition')];
-export const support = {transitions: Modernizr.csstransitions};
+export const transEndEventName = transEndEventNames[window.Modernizr.prefixed('transition')];
+export const support = {transitions: window.Modernizr.csstransitions};
 
 export const toolbarOptions = [
 	//[{ 'font': [] }, { 'size': [] }],

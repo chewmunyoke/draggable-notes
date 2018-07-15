@@ -29,7 +29,8 @@
 	.slide .title {
 		font-size: 2.6em;
 	}
-	.slide .subtitle {
+	.slide .subtitle,
+	.slide .timestamp {
 		font-size: 1.1em;
 	}
 }
@@ -40,7 +41,8 @@
 	.slide .title {
 		font-size: 2.5em;
 	}
-	.slide .subtitle {
+	.slide .subtitle,
+	.slide .timestamp {
 		font-size: 1em;
 	}
 }
@@ -52,7 +54,8 @@
 	.slide .title {
 		font-size: 2.6em;
 	}
-	.slide .subtitle {
+	.slide .subtitle,
+	.slide .timestamp {
 		font-size: 1.1em;
 	}
 	.button.note-add {
@@ -66,7 +69,8 @@
 	.slide .title {
 		font-size: 2.5em;
 	}
-	.slide .subtitle {
+	.slide .subtitle,
+	.slide .timestamp {
 		font-size: 1em;
 	}
 	.button.note-add {
